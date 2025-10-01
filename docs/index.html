@@ -1,205 +1,587 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>INCONCERT AGENTE – Gestión de Llamadas</title>
   <style>
-    :root{
-      --bg:#f5f7fb; --card:#ffffff; --ink:#111827; --muted:#6b7280; --primary:#0ea5a4; --primary-700:#0b7d7d;
-      --danger:#ef4444; --ok:#22c55e; --border:#e5e7eb;
-      --shadow:0 10px 20px rgba(2,12,27,.06),0 2px 6px rgba(2,12,27,.05);
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --ink: #111827;
+      --muted: #6b7280;
+      --primary: #0ea5a4;
+      --primary-700: #0b7d7d;
+      --danger: #ef4444;
+      --ok: #22c55e;
+      --border: #e5e7eb;
+      --shadow: 0 10px 20px rgba(2, 12, 27, .06), 0 2px 6px rgba(2, 12, 27, .05);
     }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
-      color:var(--ink); background:var(--bg); overflow-x:hidden;
-      font-size:13px; /* ultra compacto base */
+
+    * {
+      box-sizing: border-box
     }
-    .tiny{font-size:.68rem}
+
+    html,
+    body {
+      height: 100%
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      overflow-x: hidden;
+      font-size: 13px;
+      /* ultra compacto base */
+    }
+
+    .tiny {
+      font-size: .68rem
+    }
 
     /* Topbar (compacto) */
-    .topbar{
-      background:linear-gradient(90deg,var(--primary) 0%, #0db7b6 60%, #12d0ce 100%);
-      color:#fff; padding:6px 14px; display:flex; align-items:center; gap:8px;
-      position:sticky; top:0; z-index:10
+    .topbar {
+      background: linear-gradient(90deg, var(--primary) 0%, #0db7b6 60%, #12d0ce 100%);
+      color: #fff;
+      padding: 6px 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      position: sticky;
+      top: 0;
+      z-index: 10
     }
-    .topbar .brand{font-weight:700; letter-spacing:.4px; font-size:.9rem}
-    .topbar .pill{background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.25); padding:3px 6px; border-radius:999px; font-size:.72rem; display:flex; align-items:center; gap:6px}
-    .topbar .rt{margin-left:auto; display:flex; align-items:center; gap:6px}
-    .timer{background:#0b7d7d; border:1px solid rgba(255,255,255,.25); padding:3px 8px; border-radius:7px; font-variant-numeric:tabular-nums; font-size:.8rem}
+
+    .topbar .brand {
+      font-weight: 700;
+      letter-spacing: .4px;
+      font-size: .9rem
+    }
+
+    .topbar .pill {
+      background: rgba(255, 255, 255, .18);
+      border: 1px solid rgba(255, 255, 255, .25);
+      padding: 3px 6px;
+      border-radius: 999px;
+      font-size: .72rem;
+      display: flex;
+      align-items: center;
+      gap: 6px
+    }
+
+    .topbar .rt {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 6px
+    }
+
+    .timer {
+      background: #0b7d7d;
+      border: 1px solid rgba(255, 255, 255, .25);
+      padding: 3px 8px;
+      border-radius: 7px;
+      font-variant-numeric: tabular-nums;
+      font-size: .8rem
+    }
 
     /* Contenedor general (20px todo alrededor) */
-    .wrap{max-width:none; width:100%; margin:0 auto; padding:20px}
+    .wrap {
+      max-width: none;
+      width: 100%;
+      margin: 0 auto;
+      padding: 20px
+    }
 
     /* Card base (compacto) */
-    .card{background:var(--card); border:1px solid var(--border); border-radius:10px; box-shadow:var(--shadow); overflow:hidden}
-    .card .hd{display:flex; align-items:center; justify-content:space-between; padding:10px; border-bottom:1px solid var(--border)}
-    .card .hd h3{margin:0; font-size:.9rem}         /* TITULOS reducidos */
-    .card .body{padding:10px}
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      box-shadow: var(--shadow);
+      overflow: hidden
+    }
+
+    .card .hd {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 10px;
+      border-bottom: 1px solid var(--border)
+    }
+
+    .card .hd h3 {
+      margin: 0;
+      font-size: .9rem
+    }
+
+    /* TITULOS reducidos */
+    .card .body {
+      padding: 10px
+    }
 
     /* Tipografía secundaria */
-    .muted{color:var(--muted)}
+    .muted {
+      color: var(--muted)
+    }
 
     /* Labels e inputs mini */
-    label{display:block; font-size:.72rem; color:var(--muted); margin:0 0 3px}
-    input,select,textarea{
-      width:100%; padding:6px 8px; border:1px solid var(--border); border-radius:8px; background:#fff; color:var(--ink);
-      outline:none; transition:border-color .15s, box-shadow .15s, background .15s; font-size:.85rem; max-width:100%;
+    label {
+      display: block;
+      font-size: .72rem;
+      color: var(--muted);
+      margin: 0 0 3px
     }
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 6px 8px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--ink);
+      outline: none;
+      transition: border-color .15s, box-shadow .15s, background .15s;
+      font-size: .85rem;
+      max-width: 100%;
+    }
+
     /* PLACEHOLDERS reducidos */
-    input::placeholder, textarea::placeholder{ color:#9aa3af; font-size:.78rem; opacity:.9 }
-    input:focus,select:focus,textarea:focus{border-color:var(--primary); box-shadow:0 0 0 3px rgba(14,165,164,.12); background:#fbfffe}
-    input:not([type="date"]):not([type="time"]):not([type="color"]), select{min-height:30px}
-    input[type="date"],input[type="time"]{min-width:130px}
-    textarea{min-height:60px; resize:vertical}
+    input::placeholder,
+    textarea::placeholder {
+      color: #9aa3af;
+      font-size: .78rem;
+      opacity: .9
+    }
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(14, 165, 164, .12);
+      background: #fbfffe
+    }
+
+    input:not([type="date"]):not([type="time"]):not([type="color"]),
+    select {
+      min-height: 30px
+    }
+
+    input[type="date"],
+    input[type="time"] {
+      min-width: 130px
+    }
+
+    textarea {
+      min-height: 60px;
+      resize: vertical
+    }
 
     /* Girds y auto */
-    .grid-2{display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr); gap:10px}
-    @media (max-width:1000px){.grid-2{grid-template-columns:1fr}}
-    .row{display:grid; grid-template-columns:repeat(12,1fr); gap:6px}
-    .col-12{grid-column:span 12} .col-8{grid-column:span 8} .col-6{grid-column:span 6} .col-4{grid-column:span 4} .col-3{grid-column:span 3}
-    .col-5{grid-column:span 5}
-    @media (max-width:1200px){ .col-3{grid-column:span 6} .col-5{grid-column:span 12} }
-    .row>*, .auto>*{min-width:0}
-    .auto{display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:8px}
+    .grid-2 {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr);
+      gap: 10px
+    }
+
+    @media (max-width:1000px) {
+      .grid-2 {
+        grid-template-columns: 1fr
+      }
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 6px
+    }
+
+    .col-12 {
+      grid-column: span 12
+    }
+
+    .col-8 {
+      grid-column: span 8
+    }
+
+    .col-6 {
+      grid-column: span 6
+    }
+
+    .col-4 {
+      grid-column: span 4
+    }
+
+    .col-3 {
+      grid-column: span 3
+    }
+
+    .col-5 {
+      grid-column: span 5
+    }
+
+    @media (max-width:1200px) {
+      .col-3 {
+        grid-column: span 6
+      }
+
+      .col-5 {
+        grid-column: span 12
+      }
+    }
+
+    .row>*,
+    .auto>* {
+      min-width: 0
+    }
+
+    .auto {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 8px
+    }
 
     /* Split con separador y sidebar angosta */
-    .split{display:grid; grid-template-columns:minmax(0,1fr) minmax(12px,12px) minmax(0,250px); gap:0; align-items:start}
-    .vsep{width:1px; height:100%; background:var(--border); justify-self:center}
-    @media (max-width:1100px){ .split{grid-template-columns:1fr} .vsep{display:none} }
+    .split {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(12px, 12px) minmax(0, 300px);
+      gap: 0;
+      align-items: start
+    }
+
+    .vsep {
+      width: 1px;
+      height: 100%;
+      background: var(--border);
+      justify-self: center
+    }
+
+    @media (max-width:1100px) {
+      .split {
+        grid-template-columns: 1fr
+      }
+
+      .vsep {
+        display: none
+      }
+    }
 
     /* Fieldset compacto */
-    .fieldset{padding:8px; border:1px solid #eef2f7; border-radius:8px; background:#fafcff}
-    .fieldset legend{font-size:.7rem; color:#7c8a9a; padding:0 4px}
+    .fieldset {
+      padding: 8px;
+      border: 1px solid #eef2f7;
+      border-radius: 8px;
+      background: #fafcff
+    }
+
+    .fieldset legend {
+      font-size: .7rem;
+      color: #7c8a9a;
+      padding: 0 4px
+    }
 
     /* Botones compactos */
-    .btn{border:1px solid var(--border); background:#fff; padding:6px 10px; border-radius:7px; cursor:pointer; font-size:.82rem; min-height:30px}
-    .btn.primary{background:var(--primary); border-color:var(--primary); color:#fff}
-    .btn.danger{background:var(--danger); border-color:var(--danger); color:#fff}
-    .btn.ghost{background:transparent}
-    .btn:active{transform:translateY(1px)}
-    .btn.addon{width:26px; height:26px; min-width:26px; display:inline-flex; align-items:center; justify-content:center; border-radius:7px; padding:0}
+    .btn {
+      border: 1px solid var(--border);
+      background: #fff;
+      padding: 6px 10px;
+      border-radius: 7px;
+      cursor: pointer;
+      font-size: .82rem;
+      min-height: 30px
+    }
 
-    .actions{display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:8px}
-    @media (min-width:900px){ .actions.right{justify-content:flex-end} }
+    .btn.primary {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff
+    }
+
+    .btn.danger {
+      background: var(--danger);
+      border-color: var(--danger);
+      color: #fff
+    }
+
+    .btn.ghost {
+      background: transparent
+    }
+
+    .btn:active {
+      transform: translateY(1px)
+    }
+
+    .btn.addon {
+      width: 26px;
+      height: 26px;
+      min-width: 26px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 7px;
+      padding: 0
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 8px
+    }
+
+    @media (min-width:900px) {
+      .actions.right {
+        justify-content: flex-end
+      }
+    }
 
     /* Chips mini */
-    .chip{display:inline-flex; align-items:center; gap:6px; border:1px solid #c8f4e5; background:#ecfdf5; color:#065f46; padding:3px 6px; border-radius:999px; font-size:.68rem}
-    .chip .icon{width:11px; height:11px; display:inline-block}
-    .status-dot{width:6px; height:6px; border-radius:50%}
-    .ok{background:#22c55e} .bad{background:#ef4444}
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid #c8f4e5;
+      background: #ecfdf5;
+      color: #065f46;
+      padding: 3px 6px;
+      border-radius: 999px;
+      font-size: .68rem
+    }
+
+    .chip .icon {
+      width: 11px;
+      height: 11px;
+      display: inline-block
+    }
+
+    .status-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%
+    }
+
+    .ok {
+      background: #22c55e
+    }
+
+    .bad {
+      background: #ef4444
+    }
 
     /* Botón "VER LEAD" (mantener azul, más pequeño) */
-    .btn.info{border-color:#2563eb; color:#2563eb; background:#fff; padding:6px 10px; font-size:.82rem; min-height:30px}
-    .btn.info:hover{box-shadow:0 0 0 3px rgba(37,99,235,.15)}
+    .btn.info {
+      border-color: #2563eb;
+      color: #2563eb;
+      background: #fff;
+      padding: 6px 10px;
+      font-size: .82rem;
+      min-height: 30px
+    }
+
+    .btn.info:hover {
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, .15)
+    }
 
     /* Botón WhatsApp menor que Buscar */
-    .btn.wa{border-color:#22c55e; color:#16a34a; background:#fff; display:inline-flex; align-items:center; gap:6px}
-    .input-inline .btn.wa{min-height:26px; padding:0 8px; font-size:.78rem}
-    .btn.wa svg{width:12px; height:12px; display:block}
-    .btn.wa:hover{box-shadow:0 0 0 3px rgba(34,197,94,.15)}
+    .btn.wa {
+      border-color: #22c55e;
+      color: #16a34a;
+      background: #fff;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px
+    }
+
+    .input-inline .btn.wa {
+      min-height: 26px;
+      padding: 0 8px;
+      font-size: .78rem
+    }
+
+    .btn.wa svg {
+      width: 12px;
+      height: 12px;
+      display: block
+    }
+
+    .btn.wa:hover {
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, .15)
+    }
 
     /* Buscar (centrado, compacto) */
-    .stack{display:flex; flex-direction:column; gap:8px}
-    .stack.center{align-items:center}
-    .stack.center input{max-width:200px; padding:6px 8px; font-size:.85rem}
-    .stack.center .btn{min-height:30px; padding:6px 10px; font-size:.82rem; width:100px}
+    .stack {
+      display: flex;
+      flex-direction: column;
+      gap: 8px
+    }
+
+    .stack.center {
+      align-items: center
+    }
+
+    .stack.center input {
+      max-width: 200px;
+      padding: 6px 8px;
+      font-size: .85rem
+    }
+
+    .stack.center .btn {
+      min-height: 30px;
+      padding: 6px 10px;
+      font-size: .82rem;
+      width: 100px
+    }
 
     /* ===== Reducir tamaño de los VALORES en los campos ===== */
 
-/* Texto que escribe/ve el usuario en inputs, selects y textarea */
-input, select, textarea{
-  font-size: .78rem;   /* antes .85rem */
-  padding: 5px 8px;    /* un pelín más compacto para acompañar */
-  line-height: 1.2;
-}
+    /* Texto que escribe/ve el usuario en inputs, selects y textarea */
+    input,
+    select,
+    textarea {
+      font-size: .78rem;
+      /* antes .85rem */
+      padding: 5px 8px;
+      /* un pelín más compacto para acompañar */
+      line-height: 1.2;
+    }
 
-/* Placeholders aún un poco más chicos para diferenciarse del valor */
-input::placeholder,
-textarea::placeholder{
-  font-size: .74rem;   /* antes .78rem */
-  opacity: .85;
-}
+    /* Placeholders aún un poco más chicos para diferenciarse del valor */
+    input::placeholder,
+    textarea::placeholder {
+      font-size: .74rem;
+      /* antes .78rem */
+      opacity: .85;
+    }
 
-/* Controles de fecha/hora (WebKit/Chromium) */
-input[type="date"]::-webkit-datetime-edit,
-input[type="time"]::-webkit-datetime-edit{
-  font-size: .78rem;
-}
+    /* Controles de fecha/hora (WebKit/Chromium) */
+    input[type="date"]::-webkit-datetime-edit,
+    input[type="time"]::-webkit-datetime-edit {
+      font-size: .78rem;
+    }
 
-/* Menú desplegable de opciones (soporte varía según navegador) */
-select option{
-  font-size: .78rem;
-}
+    /* Menú desplegable de opciones (soporte varía según navegador) */
+    select option {
+      font-size: .78rem;
+    }
 
-/* Pastillas de la topbar: reduce números/valores sin “aplastar” */
-.topbar .pill b{
-  font-size: .85em;    /* relativo a la pill, más pequeño pero legible */
-  font-weight: 600;
-}
+    /* Pastillas de la topbar: reduce números/valores sin “aplastar” */
+    .topbar .pill b {
+      font-size: .85em;
+      /* relativo a la pill, más pequeño pero legible */
+      font-weight: 600;
+    }
 
-/* Mantén VER LEAD con su tamaño actual (no lo reduzcas) */
-.btn.info{
-  font-size: .82rem;   /* aseguras que no herede nuevos overrides más chicos */
-}
+    /* Mantén VER LEAD con su tamaño actual (no lo reduzcas) */
+    .btn.info {
+      font-size: .82rem;
+      /* aseguras que no herede nuevos overrides más chicos */
+    }
 
-/* Asegura proporción con el botón WhatsApp (sigue más pequeño que Buscar) */
-.input-inline .btn.wa{
-  font-size: .76rem;
-  min-height: 24px;
-  padding: 0 8px;
-}
-.input-inline .btn.wa svg{
-  width: 12px; height: 12px;
-}
+    /* Asegura proporción con el botón WhatsApp (sigue más pequeño que Buscar) */
+    .input-inline .btn.wa {
+      font-size: .76rem;
+      min-height: 24px;
+      padding: 0 8px;
+    }
 
-/* === Options más pequeños en los dropdowns === */
-select{
-  font-size: .76rem;       /* valor mostrado cuando está cerrado */
-  line-height: 1.2;
-}
-select option{
-  font-size: .72rem;       /* tamaño dentro del menú desplegable */
-  line-height: 1.25;
-  padding: 2px 6px;        /* algo de aire en la lista */
-}
-select optgroup{
-  font-size: .70rem;       /* etiquetas de grupo ligeramente más chicas */
-  font-weight: 600;
-}
+    .input-inline .btn.wa svg {
+      width: 12px;
+      height: 12px;
+    }
 
-/* Afinar en Firefox (mejora consistencia de tamaños) */
-@supports (-moz-appearance: none) {
-  select, select option, select optgroup{
-    font-size: .72rem;
-  }
+    /* === Options más pequeños en los dropdowns === */
+    select {
+      font-size: .76rem;
+      /* valor mostrado cuando está cerrado */
+      line-height: 1.2;
+    }
+
+    select option {
+      font-size: .72rem;
+      /* tamaño dentro del menú desplegable */
+      line-height: 1.25;
+      padding: 2px 6px;
+      /* algo de aire en la lista */
+    }
+
+    select optgroup {
+      font-size: .70rem;
+      /* etiquetas de grupo ligeramente más chicas */
+      font-weight: 600;
+    }
+
+    /* Afinar en Firefox (mejora consistencia de tamaños) */
+    @supports (-moz-appearance: none) {
+
+      select,
+      select option,
+      select optgroup {
+        font-size: .72rem;
+      }
+    }
+
+    /* === Utilidades de grid a 3 columnas para formularios === */
+    .auto.auto-3 {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      /* 3 columnas */
+      gap: 8px;
+      /* ya usas 8px en modo compacto */
+    }
+
+    /* Spans para campos que deban ocupar más ancho */
+    .span-2 {
+      grid-column: span 2;
+    }
+
+    .span-3 {
+      grid-column: 1 / -1;
+    }
+
+    /* ocupa todo el ancho (las 3 col) */
+
+    /* Responsivo: 2 col en pantallas medianas, 1 col en móviles */
+    @media (max-width: 1000px) {
+      .auto.auto-3 {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .span-3 {
+        grid-column: 1 / -1;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .auto.auto-3 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Fila única: Fuente | Campo | Búsqueda (crece) | Buscar (auto) */
+.inline-form{
+  display:grid;
+  grid-template-columns: 160px 160px 1fr auto; /* ajusta anchos fijos si quieres */
+  gap:8px;
+  align-items:end;               /* alinea el botón con los inputs */
 }
+.inline-form .full{ width:100%; }
 
-/* === Utilidades de grid a 3 columnas para formularios === */
-.auto.auto-3{
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr)); /* 3 columnas */
-  gap: 8px;                                        /* ya usas 8px en modo compacto */
+/* Responsive: 2 columnas en medianas, 1 en móvil */
+@media (max-width: 900px){
+  .inline-form{ grid-template-columns: 1fr 1fr; }
 }
-
-/* Spans para campos que deban ocupar más ancho */
-.span-2{ grid-column: span 2; }
-.span-3{ grid-column: 1 / -1; }                    /* ocupa todo el ancho (las 3 col) */
-
-/* Responsivo: 2 col en pantallas medianas, 1 col en móviles */
-@media (max-width: 1000px){
-  .auto.auto-3{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .span-3{ grid-column: 1 / -1; }
+@media (max-width: 560px){
+  .inline-form{ grid-template-columns: 1fr; }
 }
-@media (max-width: 600px){
-  .auto.auto-3{ grid-template-columns: 1fr; }
-}
-
-
   </style>
 </head>
+
 <body>
   <!-- Topbar -->
   <header class="topbar">
@@ -227,7 +609,7 @@ select optgroup{
           <!-- IZQUIERDA -->
           <div class="card" style="overflow:hidden">
             <div class="hd">
-              <h3>Datos del contacto</h3>
+              <h3>Detalle de llamada </h3>
               <div class="muted tiny">Últ. gestión: Ayer</div>
             </div>
 
@@ -243,7 +625,11 @@ select optgroup{
 
                     <div class="col-3">
                       <label>Tipo Documento</label>
-                      <select><option>DNI</option><option>C.E.</option><option>Otro</option></select>
+                      <select>
+                        <option>DNI</option>
+                        <option>C.E.</option>
+                        <option>Otro</option>
+                      </select>
                     </div>
 
                     <div class="col-4">
@@ -263,13 +649,14 @@ select optgroup{
                           <input value="922491164" placeholder="Número principal" />
                           <span class="chip">
                             <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                              <path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/>
+                              <path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z" />
                             </svg>
                             Válido
                           </span>
                           <button class="btn wa" title="Abrir WhatsApp">
                             <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                              <path d="M20.52 3.48A11.94 11.94 0 0 0 12.05 0C5.53 0 .25 5.28.25 11.8c0 2.08.55 4.14 1.6 5.95L0 24l6.41-1.78a11.76 11.76 0 0 0 5.64 1.44h.01c6.52 0 11.8-5.28 11.8-11.8 0-3.15-1.23-6.11-3.34-8.32Z"/>
+                              <path
+                                d="M20.52 3.48A11.94 11.94 0 0 0 12.05 0C5.53 0 .25 5.28.25 11.8c0 2.08.55 4.14 1.6 5.95L0 24l6.41-1.78a11.76 11.76 0 0 0 5.64 1.44h.01c6.52 0 11.8-5.28 11.8-11.8 0-3.15-1.23-6.11-3.34-8.32Z" />
                             </svg>
                             WhatsApp
                           </button>
@@ -286,7 +673,11 @@ select optgroup{
 
                     <div class="col-6">
                       <label>Campus de Estudio</label>
-                      <select><option>Lima Centro</option><option>Lima Norte</option><option>Otro</option></select>
+                      <select>
+                        <option>Lima Centro</option>
+                        <option>Lima Norte</option>
+                        <option>Otro</option>
+                      </select>
                     </div>
 
                     <div class="col-6">
@@ -294,11 +685,7 @@ select optgroup{
                       <input placeholder="Facebook" />
                     </div>
 
-                    <div class="col-12">
-                      <div class="actions">
-                        <button class="btn info">VER LEAD</button>
-                      </div>
-                    </div>
+
                   </div>
                 </div>
 
@@ -308,23 +695,43 @@ select optgroup{
                 <!-- Búsqueda rápida (sidebar) -->
                 <div>
                   <div class="fieldset">
-                    <legend><b>Búsqueda rápida</b></legend>
+
                     <div class="auto" style="margin-top:6px">
                       <div>
-                        <label>Fuente</label>
-                        <select><option>INCONCERT</option><option>CRM</option><option>Web</option></select>
+                        <label>Tipificación</label>
+                        <select id="tipificacion">
+                          <option>Contactado</option>
+                          <option>No Contactado</option>
+                        </select>
                       </div>
                       <div>
-                        <label>Campo</label>
-                        <select><option>Teléfonos</option><option>Documento</option><option>Email</option></select>
+                        <label>Motivo</label>
+                        <select>
+                          <option>—</option>
+                          <option>No contesta</option>
+                          <option>Volver a llamar</option>
+                          <option>Buzón</option>
+                          <option>Cita programada</option>
+                          <option>Referido</option>
+                          <option>Gestión</option>
+                          <option>No interesado</option>
+                        </select>
                       </div>
                       <div>
-                        <label>Búsqueda</label>
-                        <div class="stack center" style="text-align:center;">
-                          <input placeholder="Texto de búsqueda" />
-                          <button class="btn primary">Buscar</button>
-                        </div>
+                        <label>Fecha de Cita</label>
+                        <input type="date" />
                       </div>
+                      <div>
+                        <label>Hora</label>
+                        <input type="time" />
+                      </div>
+                      <!-- Acciones -->
+                      <div class="actions span-3" style="margin-top:12px">
+                        <button class="btn">Silenciar</button>
+                        <button class="btn danger">Colgar</button>
+                        <button class="btn primary">Guardar</button>
+                      </div>
+
                     </div>
                   </div>
                 </div><!-- /sidebar -->
@@ -334,96 +741,82 @@ select optgroup{
 
           <!-- DERECHA -->
           <!-- DERECHA -->
-<div class="card" style="overflow:hidden">
-  <div class="hd">
-    <h3>Detalle de llamada</h3>
-    <span class="muted tiny">922491164</span>
+          <div class="card" style="overflow:hidden">
+            <div class="hd">
+              <h3>Datos del contacto</h3>
+              <span class="muted tiny">922491164</span>
+            </div>
+
+            <div class="body">
+              <!-- Campos de llamada: 3 columnas -->
+            <div class="inline-form">
+  <div>
+    <label>Fuente</label>
+    <select class="full">
+      <option>INCONCERT</option>
+      <option>CRM</option>
+      <option>Web</option>
+    </select>
   </div>
 
-  <div class="body">
-    <!-- Campos de llamada: 3 columnas -->
-    <div class="auto auto-3">
-      <div>
-        <label>Tipificación</label>
-        <select id="tipificacion">
-          <option>Contactado</option>
-          <option>No contesta</option>
-          <option>Buzón</option>
-          <option>No interesado</option>
-        </select>
-      </div>
-      <div>
-        <label>Nivel 2</label>
-        <select>
-          <option>—</option>
-          <option>Volver a llamar</option>
-          <option>Cita programada</option>
-          <option>Referido</option>
-        </select>
-      </div>
-      <div>
-        <label>Nivel 3</label>
-        <select>
-          <option>—</option>
-          <option>Interesado</option>
-          <option>No Asistió</option>
-        </select>
-      </div>
-      <div>
-        <label>Fecha de Cita</label>
-        <input type="date" />
-      </div>
-      <div>
-        <label>Hora</label>
-        <input type="time" />
-      </div>
-      <!-- deja la tercera celda vacía para que quede alineado, o añade otro campo -->
-      <div></div>
-    </div>
+  <div>
+    <label>Campo</label>
+    <select class="full">
+      <option>Teléfonos</option>
+      <option>Documento</option>
+      <option>Email</option>
+    </select>
+  </div>
 
-    <!-- Comentarios: que ocupe las 3 columnas -->
-    <div class="span-3" style="margin-top:10px">
-      <label>Comentarios</label>
-      <textarea placeholder="Notas de la gestión (0/400)"></textarea>
-    </div>
+  <div>
+    <label>Búsqueda</label>
+    <input class="full" placeholder="Texto de búsqueda" />
+  </div>
 
-    <!-- Detalle Lead Efectivo: también en 3 columnas -->
-    <div class="fieldset span-3" style="margin-top:10px">
-      <legend><b>Detalle Lead Efectivo</b></legend>
-      <div class="auto auto-3" style="margin-top:6px">
-        <div><label>Nombres</label><input id="per_nombres" placeholder="Nombres" /></div>
-        <div><label>Apellidos</label><input id="per_apellidos" placeholder="Apellidos" /></div>
-        <div><label>DNI</label><input id="per_dni" placeholder="Documento de identidad" /></div>
-
-        <div><label>Fase</label><input value="Interesado" placeholder="Fase" /></div>
-        <div><label>Estado gestión</label><input value="Compromiso Pago" placeholder="Estado" /></div>
-        <div><label>Score</label><input placeholder="0–100" /></div>
-
-        <div><label>Asignado a</label><input value="Agente Demo" placeholder="Asesor" /></div>
-        <div><label>Origen</label><input value="Web / INCONCERT" placeholder="Origen" /></div>
-        <div><label>Fecha creación</label><input type="date" /></div>
-
-        <!-- Última gestión ocupa todo el ancho (las 3 columnas) -->
-        <div class="span-3"><label>Última gestión</label><input type="datetime-local" /></div>
-      </div>
-    </div>
-
-    <!-- Acciones -->
-    <div class="actions span-3" style="margin-top:12px">
-      <button class="btn">Silenciar</button>
-      <button class="btn danger">Colgar</button>
-      <button class="btn primary">Guardar gestión</button>
-    </div>
+  <div>
+    <label>&nbsp;</label>
+    <button class="btn primary">Buscar</button>
   </div>
 </div>
+
+
+              <!-- Comentarios: que ocupe las 3 columnas -->
+              <!--<div class="span-3" style="margin-top:10px">
+      <label>Comentarios</label>
+      <textarea placeholder="Notas de la gestión (0/400)"></textarea>
+    </div>-->
+
+              <!-- Detalle Lead Efectivo: también en 3 columnas -->
+              <div class="fieldset span-3" style="margin-top:10px">
+                <legend><b>Detalle Lead Efectivo</b></legend>
+                <div class="auto auto-3" style="margin-top:6px">
+                  <div><label>Nombres</label><input id="per_nombres" placeholder="Nombres" /></div>
+                  <div><label>Apellidos</label><input id="per_apellidos" placeholder="Apellidos" /></div>
+                  <div><label>DNI</label><input id="per_dni" placeholder="Documento de identidad" /></div>
+
+                  <div><label>Fase</label><input value="Interesado" placeholder="Fase" readonly /></div>
+                  <div><label>Estado gestión</label><input value="Compromiso Pago" placeholder="Estado" /></div>
+                  <div><label>Motivo gestión</label><input value="Compromiso Pago" placeholder="Estado" /></div>
+                  <div><label>Score</label><input placeholder="0–100" /></div>
+
+
+                  <!-- Última gestión ocupa todo el ancho (las 3 columnas) -->
+                  <div><label>Última gestión</label><input type="datetime-local" /></div>
+                </div>
+              </div>
+
+              <!-- Botones inferiores del card grande -->
+              <div class="actions" style="margin-top:14px">
+                <button class="btn info">Ver Lead</button>
+                <button class="btn primary">Actualizar Lead</button>
+              </div>
+
+            </div>
+          </div>
 
         </div><!-- /grid-2 -->
 
-        <!-- Botones inferiores del card grande -->
-        <div class="actions" style="margin-top:14px">
-  <button class="btn info">Ver Lead</button>
-  <button class="btn primary">Actualizar Lead</button>
-</div>
+
       </div>
     </section>
   </main>
@@ -431,23 +824,24 @@ select optgroup{
   <script>
     // Cronómetro simple
     const timerEl = document.getElementById('timer');
-    let sec=0;
-    setInterval(()=>{
+    let sec = 0;
+    setInterval(() => {
       sec++;
-      const h=String(Math.floor(sec/3600)).padStart(2,'0');
-      const m=String(Math.floor(sec%3600/60)).padStart(2,'0');
-      const s=String(sec%60).padStart(2,'0');
-      if(timerEl) timerEl.textContent=`${h}:${m}:${s}`
-    },1000);
+      const h = String(Math.floor(sec / 3600)).padStart(2, '0');
+      const m = String(Math.floor(sec % 3600 / 60)).padStart(2, '0');
+      const s = String(sec % 60).padStart(2, '0');
+      if (timerEl) timerEl.textContent = `${h}:${m}:${s}`
+    }, 1000);
 
     // Mostrar "Motivo" solo cuando Tipificación = "No interesado"
     const tipificacion = document.getElementById('tipificacion');
-    const motivoWrap   = document.getElementById('motivo_wrap'); // si existe
-    function toggleMotivo(){
+    const motivoWrap = document.getElementById('motivo_wrap'); // si existe
+    function toggleMotivo() {
       const show = tipificacion?.value?.toLowerCase() === 'no interesado';
-      if(motivoWrap) motivoWrap.style.display = show ? '' : 'none';
+      if (motivoWrap) motivoWrap.style.display = show ? '' : 'none';
     }
-    if (tipificacion){ toggleMotivo(); tipificacion.addEventListener('change', toggleMotivo) }
+    if (tipificacion) { toggleMotivo(); tipificacion.addEventListener('change', toggleMotivo) }
   </script>
 </body>
+
 </html>
