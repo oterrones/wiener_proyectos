@@ -1,117 +1,571 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>INCONCERT AGENTE – Gestión de Llamadas</title>
   <style>
-    :root{
-      --bg:#f5f7fb;--card:#ffffff;--ink:#111827;--muted:#6b7280;--primary:#0ea5a4;--primary-700:#0b7d7d;--danger:#ef4444;--ok:#22c55e;--border:#e5e7eb;
-      --shadow:0 10px 20px rgba(2,12,27,.06),0 2px 6px rgba(2,12,27,.05);
+    :root {
+      --bg: #f5f7fb;
+      --card: #ffffff;
+      --ink: #111827;
+      --muted: #6b7280;
+      --primary: #0ea5a4;
+      --primary-700: #0b7d7d;
+      --danger: #ef4444;
+      --ok: #22c55e;
+      --border: #e5e7eb;
+      --shadow: 0 10px 20px rgba(2, 12, 27, .06), 0 2px 6px rgba(2, 12, 27, .05);
     }
-    *{box-sizing:border-box}
-    html,body{height:100%}
-    body{
-      margin:0;
-      font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
-      color:var(--ink);background:var(--bg);
-      overflow-x:hidden; /* evita scroll horizontal */
+
+    * {
+      box-sizing: border-box
+    }
+
+    html,
+    body {
+      height: 100%
+    }
+
+    body {
+      margin: 0;
+      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      color: var(--ink);
+      background: var(--bg);
+      overflow-x: hidden;
+      /* evita scroll horizontal */
     }
 
     /* Topbar con padding lateral 20px */
-    .topbar{
-      background:linear-gradient(90deg,var(--primary) 0%, #0db7b6 60%, #12d0ce 100%);
-      color:#fff;padding:12px 20px;display:flex;align-items:center;gap:16px;
-      position:sticky;top:0;z-index:10
+    .topbar {
+      background: linear-gradient(90deg, var(--primary) 0%, #0db7b6 60%, #12d0ce 100%);
+      color: #fff;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      position: sticky;
+      top: 0;
+      z-index: 10
     }
-    .topbar .brand{font-weight:700;letter-spacing:.5px}
-    .topbar .pill{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.25);padding:6px 10px;border-radius:999px;font-size:.85rem;display:flex;align-items:center;gap:8px}
-    .topbar .rt{margin-left:auto;display:flex;align-items:center;gap:8px}
-    .timer{background:#0b7d7d;border:1px solid rgba(255,255,255,.25);padding:6px 12px;border-radius:10px;font-variant-numeric:tabular-nums}
+
+    .topbar .brand {
+      font-weight: 700;
+      letter-spacing: .5px
+    }
+
+    .topbar .pill {
+      background: rgba(255, 255, 255, .18);
+      border: 1px solid rgba(255, 255, 255, .25);
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: .85rem;
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .topbar .rt {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .timer {
+      background: #0b7d7d;
+      border: 1px solid rgba(255, 255, 255, .25);
+      padding: 6px 12px;
+      border-radius: 10px;
+      font-variant-numeric: tabular-nums
+    }
 
     /* Contenedor general a pantalla completa con 20px de margen interno */
-    .wrap{
-      max-width:none;width:100%;
-      margin:0 auto;
-      padding:20px;             /* 20px arriba, abajo, izq., der. */
+    .wrap {
+      max-width: none;
+      width: 100%;
+      margin: 0 auto;
+      padding: 20px;
+      /* 20px arriba, abajo, izq., der. */
     }
 
     /* --------- Card base --------- */
-    .card{background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow);overflow:hidden}
-    .card .hd{display:flex;align-items:center;justify-content:space-between;padding:16px;border-bottom:1px solid var(--border)}
-    .card .hd h3{margin:0;font-size:1rem}
-    .card .body{padding:16px}
-    .muted{color:var(--muted)}
-    .tiny{font-size:.78rem}
+    .card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      overflow: hidden
+    }
+
+    .card .hd {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px;
+      border-bottom: 1px solid var(--border)
+    }
+
+    .card .hd h3 {
+      margin: 0;
+      font-size: 1rem
+    }
+
+    .card .body {
+      padding: 16px
+    }
+
+    .muted {
+      color: var(--muted)
+    }
+
+    .tiny {
+      font-size: .78rem
+    }
 
     /* --------- Inputs y labels --------- */
-    label{display:block;font-size:.82rem;color:var(--muted);margin:0 0 6px}
-    input,select,textarea{
-      width:100%; padding:12px 14px; border:1px solid var(--border);
-      border-radius:12px; background:#fff; color:var(--ink);
-      outline:none; transition:border-color .15s, box-shadow .15s, background .15s;
-      max-width:100%; /* nunca más ancho que su celda */
+    label {
+      display: block;
+      font-size: .82rem;
+      color: var(--muted);
+      margin: 0 0 6px
     }
-    input:focus,select:focus,textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(14,165,164,.12);background:#fbfffe}
-    input::placeholder,textarea::placeholder{color:#a8b0bb}
-    input:not([type="date"]):not([type="time"]):not([type="color"]), select{ min-height:44px }
-    input[type="date"], input[type="time"]{ min-width:180px }
-    @media (max-width:480px){
-      input[type="date"], input[type="time"]{ min-width:0; } /* que no corten en móviles muy chicos */
+
+    input,
+    select,
+    textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: #fff;
+      color: var(--ink);
+      outline: none;
+      transition: border-color .15s, box-shadow .15s, background .15s;
+      max-width: 100%;
+      /* nunca más ancho que su celda */
     }
-    textarea{min-height:130px;resize:vertical}
+
+    input:focus,
+    select:focus,
+    textarea:focus {
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(14, 165, 164, .12);
+      background: #fbfffe
+    }
+
+    input::placeholder,
+    textarea::placeholder {
+      color: #a8b0bb
+    }
+
+    input:not([type="date"]):not([type="time"]):not([type="color"]),
+    select {
+      min-height: 44px
+    }
+
+    input[type="date"],
+    input[type="time"] {
+      min-width: 180px
+    }
+
+    @media (max-width:480px) {
+
+      input[type="date"],
+      input[type="time"] {
+        min-width: 0;
+      }
+
+      /* que no corten en móviles muy chicos */
+    }
+
+    textarea {
+      min-height: 80px;
+      resize: vertical
+    }
 
     /* --------- Grids --------- */
-    .grid-2{
-      display:grid;
-      grid-template-columns: minmax(0,1.15fr) minmax(0,.85fr); /* minmax(0, ...) evita overflow a la izq./der. */
-      gap:18px
+    .grid-2 {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr);
+      /* minmax(0, ...) evita overflow a la izq./der. */
+      gap: 18px
     }
-    @media (max-width:1000px){.grid-2{grid-template-columns:1fr}}
 
-    .row{display:grid;grid-template-columns:repeat(12,1fr);gap:12px}
-    .col-6{grid-column:span 6}.col-4{grid-column:span 4}.col-3{grid-column:span 3}.col-8{grid-column:span 8}.col-12{grid-column:span 12}
+    @media (max-width:1000px) {
+      .grid-2 {
+        grid-template-columns: 1fr
+      }
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 12px
+    }
+
+    .col-6 {
+      grid-column: span 6
+    }
+
+    .col-4 {
+      grid-column: span 4
+    }
+
+    .col-3 {
+      grid-column: span 3
+    }
+
+    .col-8 {
+      grid-column: span 8
+    }
+
+    .col-12 {
+      grid-column: span 12
+    }
 
     /* Importante: los hijos de grids pueden encogerse (evita recortes a la izquierda) */
-    .row > *, .auto > * { min-width:0; }
+    .row>*,
+    .auto>* {
+      min-width: 0;
+    }
 
     /* Paneles internos en columnas auto-fit (evitan overflow) */
-    .auto{display:grid;grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));gap:16px}
-    .auto > [class*="col-"]{grid-column:auto}
+    .auto {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px
+    }
+
+    .auto>[class*="col-"] {
+      grid-column: auto
+    }
 
     /* --------- Split con separador vertical --------- */
-    .split{display:grid;grid-template-columns:minmax(0,1fr) minmax(12px,12px) minmax(0,360px);gap:0;align-items:start}
-    .vsep{width:1px;height:100%;background:var(--border);justify-self:center}
-    @media (max-width:1100px){ .split{grid-template-columns:1fr} .vsep{display:none} }
+    .split {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(12px, 12px) minmax(0, 360px);
+      gap: 0;
+      align-items: start
+    }
+
+    .vsep {
+      width: 1px;
+      height: 100%;
+      background: var(--border);
+      justify-self: center
+    }
+
+    @media (max-width:1100px) {
+      .split {
+        grid-template-columns: 1fr
+      }
+
+      .vsep {
+        display: none
+      }
+    }
 
     /* --------- Fieldset suave --------- */
-    .fieldset{padding:14px;border:1px solid #eef2f7;border-radius:12px;background:#fafcff}
-    .fieldset legend{font-size:.8rem;color:#7c8a9a;padding:0 6px}
+    .fieldset {
+      padding: 14px;
+      border: 1px solid #eef2f7;
+      border-radius: 12px;
+      background: #fafcff
+    }
+
+    .fieldset legend {
+      font-size: .8rem;
+      color: #7c8a9a;
+      padding: 0 6px
+    }
 
     /* --------- Botones --------- */
-    .btn{border:1px solid var(--border);background:#fff;padding:10px 14px;border-radius:10px;cursor:pointer}
-    .btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}
-    .btn.danger{background:var(--danger);border-color:var(--danger);color:#fff}
-    .btn.ghost{background:transparent}
-    .btn:active{transform:translateY(1px)}
-    .btn.addon{width:36px;height:36px;min-width:36px;display:inline-flex;align-items:center;justify-content:center;border-radius:10px;padding:0}
+    .btn {
+      border: 1px solid var(--border);
+      background: #fff;
+      padding: 10px 14px;
+      border-radius: 10px;
+      cursor: pointer
+    }
 
-    .actions{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:8px}
-    @media (min-width:900px){ .actions.right{justify-content:flex-end} }
+    .btn.primary {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: #fff
+    }
+
+    .btn.danger {
+      background: var(--danger);
+      border-color: var(--danger);
+      color: #fff
+    }
+
+    .btn.ghost {
+      background: transparent
+    }
+
+    .btn:active {
+      transform: translateY(1px)
+    }
+
+    .btn.addon {
+      width: 36px;
+      height: 36px;
+      min-width: 36px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+      padding: 0
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      justify-content: center;
+      flex-wrap: wrap;
+      margin-top: 8px
+    }
+
+    @media (min-width:900px) {
+      .actions.right {
+        justify-content: flex-end
+      }
+    }
 
     /* --------- Chips --------- */
-    .chip{display:inline-flex;align-items:center;gap:8px;border:1px solid #c8f4e5;background:#ecfdf5;color:#065f46;padding:6px 10px;border-radius:999px;font-size:.78rem}
-    .status-dot{width:8px;height:8px;border-radius:50%}
-    .ok{background:#22c55e}.bad{background:#ef4444}
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid #c8f4e5;
+      background: #ecfdf5;
+      color: #065f46;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: .78rem
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%
+    }
+
+    .ok {
+      background: #22c55e
+    }
+
+    .bad {
+      background: #ef4444
+    }
 
     /* --------- Extra responsivo --------- */
-    @media (max-width:1200px){ .col-3{grid-column:span 6} }
-    @media (max-width:700px){
-      .col-6,.col-4,.col-3,.col-8{grid-column:span 12}
-      .card .body{padding:12px}
+    @media (max-width:1200px) {
+      .col-3 {
+        grid-column: span 6
+      }
     }
+
+    @media (max-width:700px) {
+
+      .col-6,
+      .col-4,
+      .col-3,
+      .col-8 {
+        grid-column: span 12
+      }
+
+      .card .body {
+        padding: 12px
+      }
+    }
+
+    /* span para columnas de 5 (Producto/Carrera) + que se expanda en pantallas medianas */
+    .col-5 {
+      grid-column: span 5;
+    }
+
+    @media (max-width:1200px) {
+      .col-5 {
+        grid-column: span 12;
+      }
+    }
+
+    /* Botón estilo "info" (azul) conservando look general de .btn */
+    .btn.info {
+      border-color: #2563eb;
+      color: #2563eb;
+      background: #fff;
+    }
+
+    .btn.info:hover {
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, .15);
+    }
+
+
+    /* Split más angosto en esta tarjeta (sidebar ~300px) */
+    .split.split--narrow {
+      grid-template-columns: minmax(0, 1fr) minmax(12px, 12px) minmax(0, 250px);
+    }
+
+    /* En la columna de búsqueda: apila input y botón con espacio vertical */
+    .stack {
+      display: flex;
+      flex-direction: column;
+      gap: 8px
+    }
+
+    /* Chip con icono delante */
+    .chip .icon {
+      width: 14px;
+      height: 14px;
+      display: inline-block
+    }
+
+    /* Botón WhatsApp */
+    .btn.wa {
+      border-color: #22c55e;
+      color: #16a34a;
+      background: #fff;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn.wa:hover {
+      box-shadow: 0 0 0 3px rgba(34, 197, 94, .15)
+    }
+
+    .btn.wa svg {
+      width: 16px;
+      height: 16px;
+      display: block
+    }
+
+    /* Asegura que el input de Producto/Carrera respire bien */
+    .col-5 {
+      grid-column: span 5
+    }
+
+    @media (max-width:1200px) {
+      .col-5 {
+        grid-column: span 12
+      }
+    }
+
+
+    /* Botón WhatsApp: más alto y con aire vertical */
+    .input-inline .btn.wa {
+      min-height: 44px;
+      /* más alto */
+      padding: 0 14px;
+      /* cómodo lateral */
+      margin-top: 4px;
+      /* separación arriba */
+      margin-bottom: 4px;
+      /* separación abajo */
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    /* Contenedor apilado del buscador: centrado y con espacio vertical */
+    .stack.center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      /* centra input y botón */
+      gap: 10px;
+      /* separa input y botón */
+    }
+
+    .stack.center input {
+      max-width: 260px;
+      /* evita que se haga gigante */
+      width: 100%;
+    }
+
+    .stack.center .btn {
+      min-height: 44px;
+      /* alto consistente */
+      width: 120px;
+      /* botón buscar más cómodo */
+    }
+    /* ===== MODO COMPACTO (reduce todo) ===== */
+body{ font-size:14px; }           /* base más pequeña */
+.tiny{ font-size:.72rem; }
+
+.topbar{ padding:8px 16px; gap:10px; }
+.topbar .pill{ padding:4px 8px; font-size:.78rem; }
+.timer{ padding:4px 8px; border-radius:8px; }
+
+.card{ border-radius:12px; }
+.card .hd{ padding:12px; }
+.card .body{ padding:12px; }
+
+.row{ gap:8px; }
+.auto{ gap:12px; }
+.grid-2{ gap:12px; }
+.split{ column-gap:0; }           /* aún más ceñido en el split */
+
+label{ font-size:.78rem; margin:0 0 4px; }
+
+input,select,textarea{
+  padding:8px 10px;               /* menos padding */
+  border-radius:10px;
+}
+input:not([type="date"]):not([type="time"]):not([type="color"]),
+select{ min-height:36px; }        /* antes ~44px */
+input[type="date"], input[type="time"]{ min-width:150px; }
+textarea{ min-height:72px; }      /* antes 80–130px */
+
+.input-inline{ gap:8px; }
+.btn{ padding:8px 12px; border-radius:8px; }
+.btn.addon{ width:30px; height:30px; min-width:30px; } /* +/− más chicos */
+.input-inline .btn.wa{ min-height:36px; padding:0 12px; } /* WhatsApp compacto */
+
+.chip{ padding:4px 8px; font-size:.72rem; }
+.chip .icon{ width:12px; height:12px; }
+.status-dot{ width:7px; height:7px; }
+
+.fieldset{ padding:10px; }
+.fieldset legend{ font-size:.75rem; }
+
+.kpi{ padding:8px 10px; min-width:100px; }
+
+/* Mantener el margen general de pantalla en 20px como pediste */
+.wrap{ padding:20px; }
+/* --- Compactar botón Buscar en la sección Búsqueda rápida --- */
+.stack.center .btn{
+  min-height: 32px;   /* antes 44px */
+  padding: 6px 10px;  /* reduce padding */
+  font-size: .85rem;  /* texto un poco más chico */
+}
+
+/* (opcional) compactar también el input del buscador */
+.stack.center input{
+  max-width: 220px;   /* antes 260px */
+  padding: 8px 10px;  /* consistente con modo compacto */
+}
+
+/* WhatsApp más pequeño que Buscar */
+.input-inline .btn.wa{
+  min-height: 28px;   /* Buscar quedó en 32px; este es menor */
+  padding: 0 10px;
+  font-size: .80rem;
+  gap: 6px;
+}
+.input-inline .btn.wa svg{
+  width: 14px;
+  height: 14px;
+}
   </style>
 </head>
+
 <body>
   <!-- Topbar -->
   <header class="topbar">
@@ -137,13 +591,17 @@
       <div class="body">
         <div class="grid-2">
           <!-- IZQUIERDA: Datos del contacto (+ Búsqueda rápida con separador) -->
+          <!-- IZQUIERDA: Datos del contacto (+ Búsqueda rápida con separador) -->
+          <!-- IZQUIERDA: Datos del contacto (+ Búsqueda rápida con separador) -->
           <div class="card" style="overflow:hidden">
             <div class="hd">
               <h3>Datos del contacto</h3>
               <div class="muted tiny">Últ. gestión: Ayer</div>
             </div>
+
             <div class="body">
-              <div class="split">
+              <!-- aplica versión angosta del split -->
+              <div class="split split--narrow">
                 <!-- Columna principal -->
                 <div>
                   <div class="row">
@@ -151,14 +609,22 @@
                       <label>Nombre</label>
                       <input value="UNW_Pregrado_20261U_RUTH ELIZABETH VALENZUELA CIRILO" />
                     </div>
+
                     <div class="col-3">
                       <label>Tipo Documento</label>
-                      <select><option>DNI</option><option>C.E.</option><option>Otro</option></select>
+                      <select>
+                        <option>DNI</option>
+                        <option>C.E.</option>
+                        <option>Otro</option>
+                      </select>
                     </div>
+
                     <div class="col-4">
                       <label>Número documento</label>
                       <input value="92249116" />
                     </div>
+
+                    <!-- Respira mejor y no se recorta -->
                     <div class="col-5">
                       <label>Producto / Carrera</label>
                       <input value="PSICOLOGÍA" />
@@ -167,37 +633,56 @@
                     <div class="col-6">
                       <label>Teléfono</label>
                       <div class="auto">
-                        <div class="input-inline">
+                        <div class="input-inline" style="flex-wrap:wrap; gap:10px">
                           <input value="922491164" />
-                          <button class="btn addon" title="Agregar">＋</button>
-                          <button class="btn addon" title="Quitar">－</button>
-                          <span class="chip"><span class="status-dot ok"></span> válido</span>
+                          <!-- Botón WhatsApp con ícono -->
+
+
+                          <!-- Chips con iconos -->
+                          <span class="chip">
+                            <!-- check -->
+                            <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                              <path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z" />
+                            </svg>
+                            Válido
+                          </span>
+                          <button class="btn wa" title="Abrir WhatsApp">
+                            <!-- ícono WhatsApp (SVG) -->
+                            <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                              <path
+                                d="M20.52 3.48A11.94 11.94 0 0 0 12.05 0C5.53 0 .25 5.28.25 11.8c0 2.08.55 4.14 1.6 5.95L0 24l6.41-1.78a11.76 11.76 0 0 0 5.64 1.44h.01c6.52 0 11.8-5.28 11.8-11.8 0-3.15-1.23-6.11-3.34-8.32ZM12.06 21.3h-.01a9.5 9.5 0 0 1-4.85-1.33l-.35-.2-3.8 1.05 1.02-3.7-.23-.38a9.49 9.49 0 0 1-1.44-5.05c0-5.25 4.27-9.52 9.52-9.52 2.54 0 4.93.99 6.72 2.78a9.47 9.47 0 0 1 2.78 6.73c0 5.25-4.27 9.52-9.52 9.52Zm5.52-7.14c-.3-.15-1.78-.88-2.06-.98-.28-.11-.48-.15-.68.15-.2.3-.78.98-.95 1.18-.17.2-.35.22-.65.07-.3-.15-1.24-.46-2.36-1.47-.87-.77-1.46-1.72-1.64-2.01-.17-.3-.02-.46.13-.6.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.38-.02-.53-.07-.15-.68-1.63-.93-2.23-.24-.58-.49-.5-.68-.5l-.58-.01c-.2 0-.52.07-.79.38-.27.3-1.04 1.01-1.04 2.46s1.07 2.85 1.22 3.04c.15.2 2.1 3.2 5.09 4.49.71.31 1.27.49 1.7.63.71.23 1.36.2 1.88.12.57-.08 1.78-.73 2.03-1.44.25-.71.25-1.33.18-1.45-.07-.12-.26-.2-.56-.35Z" />
+                            </svg>
+                            WhatsApp
+                          </button>
                         </div>
                       </div>
                     </div>
+
                     <div class="col-6">
                       <label>Correo</label>
                       <div class="input-inline">
                         <input placeholder="nombre@correo.com" />
-                        <button class="btn addon" title="Agregar">＋</button>
-                        <button class="btn addon" title="Quitar">－</button>
                       </div>
                     </div>
 
                     <div class="col-6">
                       <label>Campus de Estudio</label>
-                      <input value="Lima Norte" />
-                      <small class="muted tiny">10/100</small>
-                    </div>
-                    <div class="col-6">
-                      <label>Facebook</label>
-                      <input placeholder="perfil (opcional)" />
+                      <select>
+                        <option>Lima Centro</option>
+                        <option>Lima Norte</option>
+                        <option>Otro</option>
+                      </select>
                     </div>
 
+                    <div class="col-6">
+                      <label>Canal</label>
+                      <input placeholder="Facebook" />
+                    </div>
+
+                    <!-- Botón VER LEAD centrado al final de la columna principal -->
                     <div class="col-12">
-                      <div class="actions right">
-                        <button class="btn">Nuevo</button>
-                        <button class="btn primary">Guardar</button>
+                      <div class="actions">
+                        <button class="btn info">VER LEAD</button>
                       </div>
                     </div>
                   </div>
@@ -206,24 +691,33 @@
                 <!-- Separador vertical -->
                 <div class="vsep" aria-hidden="true"></div>
 
-                <!-- Columna lateral: Búsqueda rápida -->
+                <!-- Columna lateral: Búsqueda rápida (más angosta y con input/botón en columna) -->
                 <div>
                   <div class="fieldset">
-                    <legend>Búsqueda rápida</legend>
-                    <div class="auto">
+                    <legend style="font-weight: bold;">Búsqueda rápida</legend>
+                    <div class="auto" style="margin-top:8px">
                       <div>
                         <label>Fuente</label>
-                        <select><option>INCONCERT</option><option>CRM</option><option>Web</option></select>
+                        <select>
+                          <option>INCONCERT</option>
+                          <option>CRM</option>
+                          <option>Web</option>
+                        </select>
                       </div>
                       <div>
                         <label>Campo</label>
-                        <select><option>Teléfonos</option><option>Documento</option><option>Email</option></select>
+                        <select>
+                          <option>Teléfonos</option>
+                          <option>Documento</option>
+                          <option>Email</option>
+                        </select>
                       </div>
                       <div>
-                        <label>&nbsp;</label>
-                        <div class="input-inline">
+                        <label>Búsqueda</label>
+                        <!-- apilado vertical -->
+                        <div class="stack center" style="text-align: center;">
                           <input placeholder="Texto de búsqueda" />
-                          <button class="btn">Buscar</button>
+                          <button class="btn primary">Buscar</button>
                         </div>
                       </div>
                     </div>
@@ -232,6 +726,8 @@
               </div><!-- /split -->
             </div>
           </div>
+
+
 
           <!-- DERECHA: Detalle de llamada (mismo card, con Detalle Lead Efectivo abajo) -->
           <div class="card" style="overflow:hidden">
@@ -242,10 +738,7 @@
             <div class="body">
               <!-- Bloque de campos de llamada -->
               <div class="auto">
-                <div>
-                  <label>Integración</label>
-                  <select><option>INTEGRACION</option></select>
-                </div>
+
                 <div>
                   <label>Tipificación</label>
                   <select id="tipificacion">
@@ -256,15 +749,16 @@
                   </select>
                 </div>
                 <div>
-                  <label>Nivel 3</label>
+                  <label>Nivel 2</label>
                   <select>
+                    <option>—</option>
                     <option>Volver a llamar</option>
                     <option>Cita programada</option>
                     <option>Referido</option>
                   </select>
                 </div>
                 <div>
-                  <label>Nivel 4</label>
+                  <label>Nivel 3</label>
                   <select>
                     <option>—</option>
                     <option>Interesado</option>
@@ -282,16 +776,9 @@
               </div>
 
               <!-- Datos de persona -->
-              <div class="fieldset" style="margin-top:12px">
-                <legend>Datos de persona</legend>
-                <div class="auto">
-                  <div><label>Nombres</label><input id="per_nombres" placeholder="Nombres" /></div>
-                  <div><label>Apellidos</label><input id="per_apellidos" placeholder="Apellidos" /></div>
-                  <div><label>DNI</label><input id="per_dni" placeholder="Documento de identidad" /></div>
-                </div>
-              </div>
 
               <!-- Datos de gestión -->
+              <!--
               <div class="fieldset" style="margin-top:12px">
                 <legend>Datos de gestión</legend>
                 <div class="auto">
@@ -313,6 +800,7 @@
                 </div>
               </div>
 
+-->
               <!-- Comentarios -->
               <div style="margin-top:12px">
                 <label>Comentarios</label>
@@ -321,9 +809,14 @@
 
               <!-- ===== Detalle Lead Efectivo (DEBAJO, MISMO CARD) ===== -->
               <div class="fieldset" style="margin-top:12px">
-                <legend>Detalle Lead Efectivo</legend>
+                <legend style="font-weight: bold;">Detalle Lead Efectivo</legend>
+                <br>
                 <div class="auto">
-                  <div><label>Estado lead</label><input value="Trabajando" /></div>
+                  <div><label>Nombres</label><input id="per_nombres" placeholder="Nombres" /></div>
+                  <div><label>Apellidos</label><input id="per_apellidos" placeholder="Apellidos" /></div>
+                  <div><label>DNI</label><input id="per_dni" placeholder="Documento de identidad" /></div>
+                  <div><label>Fase</label><input value="Interesado" /></div>
+                  <div><label>Estado gestión</label><input value="Compromiso Pago" /></div>
                   <div><label>Score</label><input placeholder="0–100" /></div>
                   <div><label>Asignado a</label><input value="Agente Demo" /></div>
                   <div><label>Origen</label><input value="Web / INCONCERT" /></div>
@@ -354,16 +847,17 @@
   <script>
     // Cronómetro simple
     const timerEl = document.getElementById('timer');
-    let sec=0; setInterval(()=>{sec++;const h=String(Math.floor(sec/3600)).padStart(2,'0');const m=String(Math.floor(sec%3600/60)).padStart(2,'0');const s=String(sec%60).padStart(2,'0');timerEl.textContent=`${h}:${m}:${s}`},1000)
+    let sec = 0; setInterval(() => { sec++; const h = String(Math.floor(sec / 3600)).padStart(2, '0'); const m = String(Math.floor(sec % 3600 / 60)).padStart(2, '0'); const s = String(sec % 60).padStart(2, '0'); timerEl.textContent = `${h}:${m}:${s}` }, 1000)
 
     // Mostrar "Motivo" solo cuando Tipificación = "No interesado"
     const tipificacion = document.getElementById('tipificacion');
-    const motivoWrap   = document.getElementById('motivo_wrap');
-    function toggleMotivo(){
+    const motivoWrap = document.getElementById('motivo_wrap');
+    function toggleMotivo() {
       const show = tipificacion?.value?.toLowerCase() === 'no interesado';
-      if(motivoWrap) motivoWrap.style.display = show ? '' : 'none';
+      if (motivoWrap) motivoWrap.style.display = show ? '' : 'none';
     }
-    if (tipificacion){ toggleMotivo(); tipificacion.addEventListener('change', toggleMotivo) }
+    if (tipificacion) { toggleMotivo(); tipificacion.addEventListener('change', toggleMotivo) }
   </script>
 </body>
+
 </html>
