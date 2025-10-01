@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CCVOX AGENTE – Gestión de Llamadas</title>
+  <style>
+    :root{
+      --bg:#f5f7fb;--card:#ffffff;--ink:#1f2937;--muted:#6b7280;--primary:#0ea5a4;--primary-700:#0b7d7d;--accent:#38bdf8;--danger:#ef4444;--ok:#22c55e;--border:#e5e7eb;
+      --shadow:0 10px 20px rgba(2,12,27,.06),0 2px 6px rgba(2,12,27,.05);
+      --radius:14px
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;color:var(--ink);background:var(--bg)}
+    .topbar{background:linear-gradient(90deg,var(--primary) 0%, #0db7b6 60%, #12d0ce 100%);color:#fff;padding:12px 18px;display:flex;align-items:center;gap:16px;position:sticky;top:0;z-index:10}
+    .topbar .brand{font-weight:700;letter-spacing:.5px}
+    .topbar .pill{background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.25);padding:6px 10px;border-radius:999px;font-size:.85rem;display:flex;align-items:center;gap:8px}
+    .topbar .rt{margin-left:auto;display:flex;align-items:center;gap:8px}
+    .timer{background:#0b7d7d;border:1px solid rgba(255,255,255,.25);padding:6px 12px;border-radius:10px;font-variant-numeric:tabular-nums}
+
+    .wrap{max-width:1200px;margin:18px auto;padding:0 16px}
+    .grid{display:grid;grid-template-columns:1.18fr .82fr;gap:18px}
+    @media (max-width:1000px){.grid{grid-template-columns:1fr}}
+
+    .card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow)}
+    .card .hd{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;border-bottom:1px solid var(--border)}
+    .card .hd h3{margin:0;font-size:1rem}
+
+    .body{padding:16px}
+    .row{display:grid;grid-template-columns:repeat(12,1fr);gap:12px}
+    .col-6{grid-column:span 6}
+    .col-4{grid-column:span 4}
+    .col-3{grid-column:span 3}
+    .col-8{grid-column:span 8}
+    .col-12{grid-column:span 12}
+
+    label{display:block;font-size:.8rem;color:var(--muted);margin-bottom:6px}
+    input,select,textarea{width:100%;padding:10px 12px;border:1px solid var(--border);border-radius:10px;background:#fff;color:var(--ink);outline:none;transition:.2s}
+    input:focus,select:focus,textarea:focus{border-color:var(--primary);box-shadow:0 0 0 3px rgba(14,165,164,.15)}
+    textarea{min-height:130px;resize:vertical}
+
+    .input-inline{display:flex;align-items:center;gap:8px}
+    .chip{display:inline-flex;align-items:center;gap:6px;border:1px dashed var(--border);padding:6px 10px;border-radius:999px;font-size:.8rem;color:var(--muted)}
+    .btn{border:1px solid var(--border);background:#fff;padding:10px 14px;border-radius:10px;cursor:pointer}
+    .btn.primary{background:var(--primary);border-color:var(--primary);color:#fff}
+    .btn.ghost{background:transparent}
+    .btn.danger{background:var(--danger);border-color:var(--danger);color:#fff}
+    .btn:active{transform:translateY(1px)}
+    .actions{display:flex;gap:10px;justify-content:flex-end;margin-top:8px}
+
+    .status-dot{width:9px;height:9px;border-radius:50%}
+    .ok{background:var(--ok)}
+    .bad{background:var(--danger)}
+
+    .two{display:grid;grid-template-columns:.55fr .45fr;gap:16px}
+    @media (max-width:900px){.two{grid-template-columns:1fr}}
+    .muted{color:var(--muted)}
+    .tiny{font-size:.78rem}
+
+    .fieldset{padding:12px;border:1px dashed var(--border);border-radius:12px}
+    .fieldset legend{font-size:.8rem;color:var(--muted)}
+
+    .kpis{display:flex;flex-wrap:wrap;gap:10px}
+    .kpi{background:#f0fdfa;border:1px solid #99f6e4;border-radius:12px;padding:10px 12px;min-width:120px}
+    .kpi b{display:block}
+  </style>
+</head>
+<body>
+  <!-- Topbar -->
+  <header class="topbar">
+    <div class="brand">CCVOX AGENTE</div>
+    <div class="pill">Cola: <b>06. Lead_Colegios_3P</b></div>
+    <div class="pill">Marcador: <b>PREDICTIVO</b></div>
+    <div class="pill">N° Contacto: <b>922491164</b></div>
+    <div class="rt">
+      <button class="btn ghost" title="Reproducir">▶</button>
+      <span class="timer" id="timer">00:00:00</span>
+      <button class="btn ghost" title="Salir">⎋</button>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <div class="grid">
+      <!-- IZQUIERDA: Datos del contacto -->
+      <section class="card">
+        <div class="hd"><h3>Datos del contacto</h3>
+          <div class="kpis tiny">
+            <div class="kpi"><b>Conversando</b>00:01:23</div>
+            <div class="kpi"><b>Últ. gestión</b> Ayer</div>
+          </div>
+        </div>
+        <div class="body">
+          <div class="row">
+            <div class="col-12">
+              <label>Nombre</label>
+              <input value="UNW_Pregrado_20261U_RUTH ELIZABETH VALENZUELA CIRILO" />
+            </div>
+            <div class="col-3">
+              <label>Tipo Documento</label>
+              <select>
+                <option>DNI</option><option>C.E.</option><option>Otro</option>
+              </select>
+            </div>
+            <div class="col-4">
+              <label>Número documento</label>
+              <input value="92249116" />
+            </div>
+            <div class="col-5">
+              <label>Producto / Carrera</label>
+              <input value="PSICOLOGÍA" />
+            </div>
+
+            <div class="col-6">
+              <label>Teléfono</label>
+              <div class="input-inline">
+                <input value="922491164" />
+                <button class="btn" title="Agregar">＋</button>
+                <button class="btn" title="Quitar">－</button>
+                <span class="chip"><span class="status-dot ok"></span> válido</span>
+              </div>
+            </div>
+            <div class="col-6">
+              <label>Correo</label>
+              <div class="input-inline">
+                <input placeholder="nombre@correo.com" />
+                <button class="btn" title="Agregar">＋</button>
+                <button class="btn" title="Quitar">－</button>
+              </div>
+            </div>
+
+            <div class="col-6">
+              <label>Campus de Estudio</label>
+              <input value="Lima Norte" />
+              <small class="muted tiny">10/100</small>
+            </div>
+            <div class="col-6">
+              <label>Facebook</label>
+              <input placeholder="perfil (opcional)" />
+            </div>
+
+            <div class="col-12">
+              <div class="actions">
+                <button class="btn">Nuevo</button>
+                <button class="btn primary">Guardar</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- DERECHA: Detalle de llamada -->
+      <aside class="card">
+        <div class="hd"><h3>Detalle de llamada</h3><span class="muted tiny">922491164</span></div>
+        <div class="body two">
+          <div>
+            <label>Integración</label>
+            <select>
+              <option>INTEGRACION</option>
+            </select>
+          </div>
+          <div>
+            <label>Tipificación</label>
+            <select>
+              <option>Contactado</option>
+              <option>No contesta</option>
+              <option>Buzón</option>
+              <option>No interesado</option>
+            </select>
+          </div>
+
+          <div>
+            <label>Nivel 3</label>
+            <select>
+              <option>Volver a llamar</option>
+              <option>Cita programada</option>
+              <option>Referido</option>
+            </select>
+          </div>
+          <div>
+            <label>Nivel 4</label>
+            <select>
+              <option>—</option>
+              <option>Interesado</option>
+              <option>No Asistió</option>
+            </select>
+          </div>
+
+          <div>
+            <label>Fecha de Programación</label>
+            <input type="date" />
+          </div>
+          <div>
+            <label>Hora</label>
+            <input type="time" />
+          </div>
+
+          <div class="col-12">
+            <label>Comentarios</label>
+            <textarea placeholder="Notas de la gestión (0/400)"></textarea>
+          </div>
+
+          <div class="col-12 actions">
+            <button class="btn">Silenciar</button>
+            <button class="btn danger">Colgar</button>
+            <button class="btn primary">Guardar gestión</button>
+          </div>
+        </div>
+      </aside>
+    </div>
+
+    <!-- Panel inferior opcional: Búsqueda / KPIs -->
+    <section class="card" style="margin-top:16px">
+      <div class="hd"><h3>Búsqueda rápida y métricas</h3></div>
+      <div class="body row">
+        <div class="col-4">
+          <label>Fuente</label>
+          <select><option>CCVOX</option><option>CRM</option><option>Web</option></select>
+        </div>
+        <div class="col-4">
+          <label>Campo Búsqueda</label>
+          <select><option>Teléfonos</option><option>Documento</option><option>Email</option></select>
+        </div>
+        <div class="col-4">
+          <label>&nbsp;</label>
+          <div class="input-inline">
+            <input placeholder="Búsqueda" />
+            <button class="btn">Buscar</button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Cronómetro simple
+    const timerEl = document.getElementById('timer');
+    let sec=0; setInterval(()=>{sec++;const h=String(Math.floor(sec/3600)).padStart(2,'0');const m=String(Math.floor(sec%3600/60)).padStart(2,'0');const s=String(sec%60).padStart(2,'0');timerEl.textContent=`${h}:${m}:${s}`},1000)
+  </script>
+</body>
+</html>
