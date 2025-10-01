@@ -579,6 +579,12 @@
 @media (max-width: 560px){
   .inline-form{ grid-template-columns: 1fr; }
 }
+/* Look de solo lectura */
+input[readonly]{
+  background:#f7fafc;
+  color:#4b5563;
+  cursor:not-allowed;
+}
   </style>
 </head>
 
@@ -789,20 +795,69 @@
               <!-- Detalle Lead Efectivo: también en 3 columnas -->
               <div class="fieldset span-3" style="margin-top:10px">
                 <legend><b>Detalle Lead Efectivo</b></legend>
-                <div class="auto auto-3" style="margin-top:6px">
-                  <div><label>Nombres</label><input id="per_nombres" placeholder="Nombres" /></div>
-                  <div><label>Apellidos</label><input id="per_apellidos" placeholder="Apellidos" /></div>
-                  <div><label>DNI</label><input id="per_dni" placeholder="Documento de identidad" /></div>
+               <div class="auto auto-3" style="margin-top:6px">
+  <div>
+    <label>Nombres</label>
+    <input id="per_nombres" placeholder="Nombres" />
+  </div>
 
-                  <div><label>Fase</label><input value="Interesado" placeholder="Fase" readonly /></div>
-                  <div><label>Estado gestión</label><input value="Compromiso Pago" placeholder="Estado" /></div>
-                  <div><label>Motivo gestión</label><input value="Compromiso Pago" placeholder="Estado" /></div>
-                  <div><label>Score</label><input placeholder="0–100" /></div>
+  <div>
+    <label>Apellidos</label>
+    <input id="per_apellidos" placeholder="Apellidos" />
+  </div>
 
+  <div>
+    <label>DNI</label>
+    <input id="per_dni" placeholder="Documento de identidad" />
+  </div>
 
-                  <!-- Última gestión ocupa todo el ancho (las 3 columnas) -->
-                  <div><label>Última gestión</label><input type="datetime-local" /></div>
-                </div>
+  <div>
+    <label>Fase</label>
+    <input value="Interesado" placeholder="Fase" readonly />
+  </div>
+
+  <div>
+    <label>Estado gestión</label>
+    <select id="estado_gestion">
+      <option value="">— Selecciona estado —</option>
+      <option>Contactado</option>
+      <option>Volver a llamar</option>
+      <option>Cita programada</option>
+      <option>Compromiso de pago</option>
+      <option>Matriculado</option>
+      <option>No interesado</option>
+      <option>Buzón</option>
+      <option>No contesta</option>
+    </select>
+  </div>
+
+  <div>
+    <label>Motivo gestión</label>
+    <select id="motivo_gestion">
+      <option value="">— Selecciona motivo —</option>
+      <option>Precio</option>
+      <option>Horario</option>
+      <option>Distancia</option>
+      <option>Otra institución</option>
+      <option>No puede pagar</option>
+      <option>Falta de documentos</option>
+      <option>No disponible</option>
+      <option>Otro</option>
+    </select>
+  </div>
+
+  <div>
+    <label>Score</label>
+    <input type="number" min="0" max="100" step="1" placeholder="0–100" />
+  </div>
+
+  <!-- Última gestión ocupa todo el ancho (las 3 columnas) -->
+  <div >
+    <label>Última gestión</label>
+    <input type="datetime-local" />
+  </div>
+</div>
+
               </div>
 
               <!-- Botones inferiores del card grande -->
