@@ -564,27 +564,53 @@
     }
 
     /* Fila única: Fuente | Campo | Búsqueda (crece) | Buscar (auto) */
-.inline-form{
-  display:grid;
-  grid-template-columns: 160px 160px 1fr auto; /* ajusta anchos fijos si quieres */
-  gap:8px;
-  align-items:end;               /* alinea el botón con los inputs */
-}
-.inline-form .full{ width:100%; }
+    .inline-form {
+      display: grid;
+      grid-template-columns: 160px 160px 1fr auto;
+      /* ajusta anchos fijos si quieres */
+      gap: 8px;
+      align-items: end;
+      /* alinea el botón con los inputs */
+    }
 
-/* Responsive: 2 columnas en medianas, 1 en móvil */
-@media (max-width: 900px){
-  .inline-form{ grid-template-columns: 1fr 1fr; }
-}
-@media (max-width: 560px){
-  .inline-form{ grid-template-columns: 1fr; }
-}
-/* Look de solo lectura */
-input[readonly]{
-  background:#f7fafc;
-  color:#4b5563;
-  cursor:not-allowed;
-}
+    .inline-form .full {
+      width: 100%;
+    }
+
+    /* Responsive: 2 columnas en medianas, 1 en móvil */
+    @media (max-width: 900px) {
+      .inline-form {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .inline-form {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Look de solo lectura */
+    input[readonly] {
+      background: #f7fafc;
+      color: #4b5563;
+      cursor: not-allowed;
+    }
+
+    /* Script de atención */
+    #script_text {
+      min-height: 120px;
+      white-space: pre-wrap;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 2px 6px;
+      border: 1px solid var(--border);
+      border-radius: 999px;
+      font-size: .68rem;
+      color: #4b5563;
+    }
   </style>
 </head>
 
@@ -679,11 +705,10 @@ input[readonly]{
 
                     <div class="col-6">
                       <label>Campus de Estudio</label>
-                      <select>
-                        <option>Lima Centro</option>
-                        <option>Lima Norte</option>
-                      </select>
+
+                      <input value="Lima Centro" placeholder="Campus" />
                     </div>
+
 
                     <div class="col-6">
                       <label>Canal</label>
@@ -740,7 +765,24 @@ input[readonly]{
                     </div>
                   </div>
                 </div><!-- /sidebar -->
+                
               </div><!-- /split -->
+              <div class="fieldset span-3" id="scriptSection" style="margin-top:10px">
+  <legend><b>Script de atención</b></legend>
+
+  <div class="auto auto-3" style="align-items:end">
+
+
+    <div class="span-3">
+      <div class="tiny muted" style="margin:4px 0 6px">
+        Usa marcadores: <span class="badge">{NOMBRE}</span> <span class="badge">{PRODUCTO}</span> <span class="badge">{FECHA_CITA}</span> <span class="badge">{HORA_CITA}</span>
+      </div>
+      <textarea id="script_text" placeholder="El guion sugerido aparecerá aquí según el tipo de lead…"></textarea>
+      
+    </div>
+  </div>
+</div>
+
             </div>
           </div>
 
@@ -754,35 +796,28 @@ input[readonly]{
 
             <div class="body">
               <!-- Campos de llamada: 3 columnas -->
-            <div class="inline-form">
-  <div>
-    <label>Fuente</label>
-    <select class="full">
-      <option>INCONCERT</option>
-      <option>CRM</option>
-      <option>Web</option>
-    </select>
-  </div>
+              <div class="inline-form">
 
-  <div>
-    <label>Campo</label>
-    <select class="full">
-      <option>Teléfonos</option>
-      <option>Documento</option>
-      <option>Email</option>
-    </select>
-  </div>
 
-  <div>
-    <label>Búsqueda</label>
-    <input class="full" placeholder="Texto de búsqueda" />
-  </div>
+                <div>
+                  <label>Campo</label>
+                  <select class="full">
+                    <option>Teléfonos</option>
+                    <option>Documento</option>
+                    <option>Email</option>
+                  </select>
+                </div>
 
-  <div>
-    <label>&nbsp;</label>
-    <button class="btn primary">Buscar</button>
-  </div>
-</div>
+                <div>
+                  <label>Búsqueda</label>
+                  <input class="full" placeholder="Texto de búsqueda" />
+                </div>
+
+                <div>
+                  <label>&nbsp;</label>
+                  <button class="btn primary">Buscar</button>
+                </div>
+              </div>
 
 
               <!-- Comentarios: que ocupe las 3 columnas -->
@@ -794,68 +829,68 @@ input[readonly]{
               <!-- Detalle Lead Efectivo: también en 3 columnas -->
               <div class="fieldset span-3" style="margin-top:10px">
                 <legend><b>Detalle Lead Efectivo</b></legend>
-               <div class="auto auto-3" style="margin-top:6px">
-  <div>
-    <label>Nombres</label>
-    <input id="per_nombres" placeholder="Nombres" />
-  </div>
+                <div class="auto auto-3" style="margin-top:6px">
+                  <div>
+                    <label>Nombres</label>
+                    <input id="per_nombres" placeholder="Nombres" />
+                  </div>
 
-  <div>
-    <label>Apellidos</label>
-    <input id="per_apellidos" placeholder="Apellidos" />
-  </div>
+                  <div>
+                    <label>Apellidos</label>
+                    <input id="per_apellidos" placeholder="Apellidos" />
+                  </div>
 
-  <div>
-    <label>DNI</label>
-    <input id="per_dni" placeholder="Documento de identidad" />
-  </div>
+                  <div>
+                    <label>DNI</label>
+                    <input id="per_dni" placeholder="Documento de identidad" />
+                  </div>
 
-  <div>
-    <label>Fase</label>
-    <input value="Interesado" placeholder="Fase" readonly />
-  </div>
+                  <div>
+                    <label>Fase</label>
+                    <input value="Interesado" placeholder="Fase" readonly />
+                  </div>
 
-  <div>
-    <label>Estado gestión</label>
-    <select id="estado_gestion">
-      <option value="">— Selecciona estado —</option>
-      <option>Contactado</option>
-      <option>Volver a llamar</option>
-      <option>Cita programada</option>
-      <option>Compromiso de pago</option>
-      <option>Matriculado</option>
-      <option>No interesado</option>
-      <option>Buzón</option>
-      <option>No contesta</option>
-    </select>
-  </div>
+                  <div>
+                    <label>Estado gestión</label>
+                    <select id="estado_gestion">
+                      <option value="">— Selecciona estado —</option>
+                      <option>Contactado</option>
+                      <option>Volver a llamar</option>
+                      <option>Cita programada</option>
+                      <option>Compromiso de pago</option>
+                      <option>Matriculado</option>
+                      <option>No interesado</option>
+                      <option>Buzón</option>
+                      <option>No contesta</option>
+                    </select>
+                  </div>
 
-  <div>
-    <label>Motivo gestión</label>
-    <select id="motivo_gestion">
-      <option value="">— Selecciona motivo —</option>
-      <option>Precio</option>
-      <option>Horario</option>
-      <option>Distancia</option>
-      <option>Otra institución</option>
-      <option>No puede pagar</option>
-      <option>Falta de documentos</option>
-      <option>No disponible</option>
-      <option>Otro</option>
-    </select>
-  </div>
+                  <div>
+                    <label>Motivo gestión</label>
+                    <select id="motivo_gestion">
+                      <option value="">— Selecciona motivo —</option>
+                      <option>Precio</option>
+                      <option>Horario</option>
+                      <option>Distancia</option>
+                      <option>Otra institución</option>
+                      <option>No puede pagar</option>
+                      <option>Falta de documentos</option>
+                      <option>No disponible</option>
+                      <option>Otro</option>
+                    </select>
+                  </div>
 
-  <div>
-    <label>Score</label>
-    <input type="number" min="0" max="100" step="1" placeholder="0–100" />
-  </div>
+                  <div>
+                    <label>Score</label>
+                    <input type="number" min="0" max="100" step="1" placeholder="0–100" />
+                  </div>
 
-  <!-- Última gestión ocupa todo el ancho (las 3 columnas) -->
-  <div >
-    <label>Última gestión</label>
-    <input type="datetime-local" />
-  </div>
-</div>
+                  <!-- Última gestión ocupa todo el ancho (las 3 columnas) -->
+                  <div>
+                    <label>Última gestión</label>
+                    <input type="datetime-local" />
+                  </div>
+                </div>
 
               </div>
 
@@ -864,6 +899,8 @@ input[readonly]{
                 <button class="btn info">Ver Lead</button>
                 <button class="btn primary">Actualizar Lead</button>
               </div>
+
+              
 
             </div>
           </div>
@@ -896,6 +933,109 @@ input[readonly]{
     }
     if (tipificacion) { toggleMotivo(); tipificacion.addEventListener('change', toggleMotivo) }
   </script>
+
+  <script>
+    // --- plantillas de guiones por tipo ---
+    const SCRIPTS = {
+      contactado:
+        `Hola {NOMBRE}, ¿qué tal? Te habla de admisión.
+Veo tu interés en {PRODUCTO}. 
+¿Te parece si agendamos una cita para resolver dudas?`,
+      no_contesta:
+        `Intentamos comunicarnos con {NOMBRE}. 
+Dejar SMS/WhatsApp y reprogramar llamada.`,
+      buzon:
+        `Se dejó buzón de voz a {NOMBRE}. 
+Enviar WhatsApp con información de {PRODUCTO} y reagendar.`,
+      volver_llamar:
+        `Hola {NOMBRE}, te llamo para retomar tu interés en {PRODUCTO}.
+¿Podemos hablar {FECHA_CITA} a las {HORA_CITA}?`,
+      cita_programada:
+        `¡Perfecto, {NOMBRE}! Confirmo tu cita para {FECHA_CITA} a las {HORA_CITA}.
+No olvides tu documento y llegar 10 minutos antes.`,
+      no_interesado:
+        `Gracias por tu tiempo, {NOMBRE}. 
+¿Podrías comentarme brevemente el motivo? Así mejoramos nuestro servicio.`,
+      referido:
+        `Hola {NOMBRE}, nos compartieron tu contacto porque te interesa {PRODUCTO}. 
+¿Tienes 2 minutos para contarte beneficios y pasos?`,
+      compromiso_pago:
+        `Genial, {NOMBRE}. Te ayudo con el compromiso de pago.
+Te enviaré el enlace y requisitos. ¿Te queda bien {FECHA_CITA} a las {HORA_CITA} para confirmar?`
+    };
+
+    // --- helpers para traer valores del formulario ---
+    function valSel(q) { const el = document.querySelector(q); return el ? (el.value || '').trim() : ''; }
+    function pickFecha() { return valSel('input[type="date"]') || ''; }
+    function pickHora() { return valSel('input[type="time"]') || ''; }
+
+    function getContext() {
+      return {
+        NOMBRE: valSel('input[placeholder="Carrera"]') ? valSel('input[value][placeholder="Carrera"]') : valSel('input[value]'), // fallback
+        // mejor toma el campo "Nombre" exacto
+        NOMBRE: document.querySelector('label+input[placeholder="Carrera"]') ? valSel('.col-12 input') : valSel('.col-12 input'),
+        PRODUCTO: valSel('input[placeholder="Carrera"]') || valSel('input[value][placeholder="Carrera"]') || 'la carrera',
+        FECHA_CITA: pickFecha(),
+        HORA_CITA: pickHora()
+      };
+    }
+
+    // mapea tipificación -> tipo_lead
+    const TIPI_TO_TIPO = {
+      'contactado': 'contactado',
+      'no contesta': 'no_contesta',
+      'buzón': 'buzon',
+      'buzon': 'buzon',
+      'volver a llamar': 'volver_llamar',
+      'cita programada': 'cita_programada',
+      'no interesado': 'no_interesado',
+      'referido': 'referido',
+      'compromiso de pago': 'compromiso_pago'
+    };
+
+    const selTipi = document.getElementById('tipificacion');
+    const selTipo = document.getElementById('tipo_lead');
+    const taScript = document.getElementById('script_text');
+    const btnCopiar = document.getElementById('btnCopiar');
+    const btnInsertar = document.getElementById('btnInsertarDatos');
+
+    function renderScript() {
+      const key = (selTipo?.value || 'contactado');
+      let tpl = SCRIPTS[key] || '';
+      const ctx = getContext();
+      taScript.value = tpl
+        .replaceAll('{NOMBRE}', ctx.NOMBRE || 'el/la interesado(a)')
+        .replaceAll('{PRODUCTO}', ctx.PRODUCTO || 'la carrera')
+        .replaceAll('{FECHA_CITA}', ctx.FECHA_CITA || 'dd/mm/aaaa')
+        .replaceAll('{HORA_CITA}', ctx.HORA_CITA || '--:--');
+    }
+
+    // Ajusta tipo_lead cuando cambie la Tipificación
+    function syncTipoFromTipi() {
+      const t = (selTipi?.value || '').toLowerCase();
+      const mapped = TIPI_TO_TIPO[t];
+      if (mapped && selTipo && selTipo.value !== mapped) {
+        selTipo.value = mapped;
+      }
+      renderScript();
+    }
+
+    selTipo && selTipo.addEventListener('change', renderScript);
+    selTipi && selTipi.addEventListener('change', syncTipoFromTipi);
+
+    btnCopiar && btnCopiar.addEventListener('click', () => {
+      taScript.select();
+      document.execCommand('copy');
+    });
+
+    btnInsertar && btnInsertar.addEventListener('click', renderScript);
+
+    // init
+    syncTipoFromTipi();  // intenta leer tipificación inicial
+    if (!taScript.value) renderScript();
+  </script>
+
+
 </body>
 
 </html>
