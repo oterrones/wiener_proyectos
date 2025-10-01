@@ -1,571 +1,205 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>INCONCERT AGENTE – Gestión de Llamadas</title>
   <style>
-    :root {
-      --bg: #f5f7fb;
-      --card: #ffffff;
-      --ink: #111827;
-      --muted: #6b7280;
-      --primary: #0ea5a4;
-      --primary-700: #0b7d7d;
-      --danger: #ef4444;
-      --ok: #22c55e;
-      --border: #e5e7eb;
-      --shadow: 0 10px 20px rgba(2, 12, 27, .06), 0 2px 6px rgba(2, 12, 27, .05);
-    }
-
-    * {
-      box-sizing: border-box
-    }
-
-    html,
-    body {
-      height: 100%
-    }
-
-    body {
-      margin: 0;
-      font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-      color: var(--ink);
-      background: var(--bg);
-      overflow-x: hidden;
-      /* evita scroll horizontal */
-    }
-
-    /* Topbar con padding lateral 20px */
-    .topbar {
-      background: linear-gradient(90deg, var(--primary) 0%, #0db7b6 60%, #12d0ce 100%);
-      color: #fff;
-      padding: 12px 20px;
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      position: sticky;
-      top: 0;
-      z-index: 10
-    }
-
-    .topbar .brand {
-      font-weight: 700;
-      letter-spacing: .5px
-    }
-
-    .topbar .pill {
-      background: rgba(255, 255, 255, .18);
-      border: 1px solid rgba(255, 255, 255, .25);
-      padding: 6px 10px;
-      border-radius: 999px;
-      font-size: .85rem;
-      display: flex;
-      align-items: center;
-      gap: 8px
-    }
-
-    .topbar .rt {
-      margin-left: auto;
-      display: flex;
-      align-items: center;
-      gap: 8px
-    }
-
-    .timer {
-      background: #0b7d7d;
-      border: 1px solid rgba(255, 255, 255, .25);
-      padding: 6px 12px;
-      border-radius: 10px;
-      font-variant-numeric: tabular-nums
-    }
-
-    /* Contenedor general a pantalla completa con 20px de margen interno */
-    .wrap {
-      max-width: none;
-      width: 100%;
-      margin: 0 auto;
-      padding: 20px;
-      /* 20px arriba, abajo, izq., der. */
-    }
-
-    /* --------- Card base --------- */
-    .card {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 16px;
-      box-shadow: var(--shadow);
-      overflow: hidden
-    }
-
-    .card .hd {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 16px;
-      border-bottom: 1px solid var(--border)
-    }
-
-    .card .hd h3 {
-      margin: 0;
-      font-size: 1rem
-    }
-
-    .card .body {
-      padding: 16px
-    }
-
-    .muted {
-      color: var(--muted)
-    }
-
-    .tiny {
-      font-size: .78rem
-    }
-
-    /* --------- Inputs y labels --------- */
-    label {
-      display: block;
-      font-size: .82rem;
-      color: var(--muted);
-      margin: 0 0 6px
-    }
-
-    input,
-    select,
-    textarea {
-      width: 100%;
-      padding: 12px 14px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      background: #fff;
-      color: var(--ink);
-      outline: none;
-      transition: border-color .15s, box-shadow .15s, background .15s;
-      max-width: 100%;
-      /* nunca más ancho que su celda */
-    }
-
-    input:focus,
-    select:focus,
-    textarea:focus {
-      border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(14, 165, 164, .12);
-      background: #fbfffe
-    }
-
-    input::placeholder,
-    textarea::placeholder {
-      color: #a8b0bb
-    }
-
-    input:not([type="date"]):not([type="time"]):not([type="color"]),
-    select {
-      min-height: 44px
-    }
-
-    input[type="date"],
-    input[type="time"] {
-      min-width: 180px
-    }
-
-    @media (max-width:480px) {
-
-      input[type="date"],
-      input[type="time"] {
-        min-width: 0;
-      }
-
-      /* que no corten en móviles muy chicos */
-    }
-
-    textarea {
-      min-height: 80px;
-      resize: vertical
-    }
-
-    /* --------- Grids --------- */
-    .grid-2 {
-      display: grid;
-      grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr);
-      /* minmax(0, ...) evita overflow a la izq./der. */
-      gap: 18px
-    }
-
-    @media (max-width:1000px) {
-      .grid-2 {
-        grid-template-columns: 1fr
-      }
-    }
-
-    .row {
-      display: grid;
-      grid-template-columns: repeat(12, 1fr);
-      gap: 12px
-    }
-
-    .col-6 {
-      grid-column: span 6
-    }
-
-    .col-4 {
-      grid-column: span 4
-    }
-
-    .col-3 {
-      grid-column: span 3
-    }
-
-    .col-8 {
-      grid-column: span 8
-    }
-
-    .col-12 {
-      grid-column: span 12
-    }
-
-    /* Importante: los hijos de grids pueden encogerse (evita recortes a la izquierda) */
-    .row>*,
-    .auto>* {
-      min-width: 0;
-    }
-
-    /* Paneles internos en columnas auto-fit (evitan overflow) */
-    .auto {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-      gap: 16px
-    }
-
-    .auto>[class*="col-"] {
-      grid-column: auto
-    }
-
-    /* --------- Split con separador vertical --------- */
-    .split {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(12px, 12px) minmax(0, 360px);
-      gap: 0;
-      align-items: start
-    }
-
-    .vsep {
-      width: 1px;
-      height: 100%;
-      background: var(--border);
-      justify-self: center
-    }
-
-    @media (max-width:1100px) {
-      .split {
-        grid-template-columns: 1fr
-      }
-
-      .vsep {
-        display: none
-      }
-    }
-
-    /* --------- Fieldset suave --------- */
-    .fieldset {
-      padding: 14px;
-      border: 1px solid #eef2f7;
-      border-radius: 12px;
-      background: #fafcff
-    }
-
-    .fieldset legend {
-      font-size: .8rem;
-      color: #7c8a9a;
-      padding: 0 6px
-    }
-
-    /* --------- Botones --------- */
-    .btn {
-      border: 1px solid var(--border);
-      background: #fff;
-      padding: 10px 14px;
-      border-radius: 10px;
-      cursor: pointer
-    }
-
-    .btn.primary {
-      background: var(--primary);
-      border-color: var(--primary);
-      color: #fff
-    }
-
-    .btn.danger {
-      background: var(--danger);
-      border-color: var(--danger);
-      color: #fff
-    }
-
-    .btn.ghost {
-      background: transparent
-    }
-
-    .btn:active {
-      transform: translateY(1px)
-    }
-
-    .btn.addon {
-      width: 36px;
-      height: 36px;
-      min-width: 36px;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      border-radius: 10px;
-      padding: 0
-    }
-
-    .actions {
-      display: flex;
-      gap: 10px;
-      justify-content: center;
-      flex-wrap: wrap;
-      margin-top: 8px
-    }
-
-    @media (min-width:900px) {
-      .actions.right {
-        justify-content: flex-end
-      }
-    }
-
-    /* --------- Chips --------- */
-    .chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      border: 1px solid #c8f4e5;
-      background: #ecfdf5;
-      color: #065f46;
-      padding: 6px 10px;
-      border-radius: 999px;
-      font-size: .78rem
-    }
-
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%
-    }
-
-    .ok {
-      background: #22c55e
-    }
-
-    .bad {
-      background: #ef4444
-    }
-
-    /* --------- Extra responsivo --------- */
-    @media (max-width:1200px) {
-      .col-3 {
-        grid-column: span 6
-      }
-    }
-
-    @media (max-width:700px) {
-
-      .col-6,
-      .col-4,
-      .col-3,
-      .col-8 {
-        grid-column: span 12
-      }
-
-      .card .body {
-        padding: 12px
-      }
-    }
-
-    /* span para columnas de 5 (Producto/Carrera) + que se expanda en pantallas medianas */
-    .col-5 {
-      grid-column: span 5;
-    }
-
-    @media (max-width:1200px) {
-      .col-5 {
-        grid-column: span 12;
-      }
-    }
-
-    /* Botón estilo "info" (azul) conservando look general de .btn */
-    .btn.info {
-      border-color: #2563eb;
-      color: #2563eb;
-      background: #fff;
-    }
-
-    .btn.info:hover {
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, .15);
-    }
-
-
-    /* Split más angosto en esta tarjeta (sidebar ~300px) */
-    .split.split--narrow {
-      grid-template-columns: minmax(0, 1fr) minmax(12px, 12px) minmax(0, 250px);
-    }
-
-    /* En la columna de búsqueda: apila input y botón con espacio vertical */
-    .stack {
-      display: flex;
-      flex-direction: column;
-      gap: 8px
-    }
-
-    /* Chip con icono delante */
-    .chip .icon {
-      width: 14px;
-      height: 14px;
-      display: inline-block
-    }
-
-    /* Botón WhatsApp */
-    .btn.wa {
-      border-color: #22c55e;
-      color: #16a34a;
-      background: #fff;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .btn.wa:hover {
-      box-shadow: 0 0 0 3px rgba(34, 197, 94, .15)
-    }
-
-    .btn.wa svg {
-      width: 16px;
-      height: 16px;
-      display: block
-    }
-
-    /* Asegura que el input de Producto/Carrera respire bien */
-    .col-5 {
-      grid-column: span 5
-    }
-
-    @media (max-width:1200px) {
-      .col-5 {
-        grid-column: span 12
-      }
-    }
-
-
-    /* Botón WhatsApp: más alto y con aire vertical */
-    .input-inline .btn.wa {
-      min-height: 44px;
-      /* más alto */
-      padding: 0 14px;
-      /* cómodo lateral */
-      margin-top: 4px;
-      /* separación arriba */
-      margin-bottom: 4px;
-      /* separación abajo */
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    /* Contenedor apilado del buscador: centrado y con espacio vertical */
-    .stack.center {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      /* centra input y botón */
-      gap: 10px;
-      /* separa input y botón */
-    }
-
-    .stack.center input {
-      max-width: 260px;
-      /* evita que se haga gigante */
-      width: 100%;
-    }
-
-    .stack.center .btn {
-      min-height: 44px;
-      /* alto consistente */
-      width: 120px;
-      /* botón buscar más cómodo */
-    }
-    /* ===== MODO COMPACTO (reduce todo) ===== */
-body{ font-size:14px; }           /* base más pequeña */
-.tiny{ font-size:.72rem; }
-
-.topbar{ padding:8px 16px; gap:10px; }
-.topbar .pill{ padding:4px 8px; font-size:.78rem; }
-.timer{ padding:4px 8px; border-radius:8px; }
-
-.card{ border-radius:12px; }
-.card .hd{ padding:12px; }
-.card .body{ padding:12px; }
-
-.row{ gap:8px; }
-.auto{ gap:12px; }
-.grid-2{ gap:12px; }
-.split{ column-gap:0; }           /* aún más ceñido en el split */
-
-label{ font-size:.78rem; margin:0 0 4px; }
-
-input,select,textarea{
-  padding:8px 10px;               /* menos padding */
-  border-radius:10px;
-}
-input:not([type="date"]):not([type="time"]):not([type="color"]),
-select{ min-height:36px; }        /* antes ~44px */
-input[type="date"], input[type="time"]{ min-width:150px; }
-textarea{ min-height:72px; }      /* antes 80–130px */
-
-.input-inline{ gap:8px; }
-.btn{ padding:8px 12px; border-radius:8px; }
-.btn.addon{ width:30px; height:30px; min-width:30px; } /* +/− más chicos */
-.input-inline .btn.wa{ min-height:36px; padding:0 12px; } /* WhatsApp compacto */
-
-.chip{ padding:4px 8px; font-size:.72rem; }
-.chip .icon{ width:12px; height:12px; }
-.status-dot{ width:7px; height:7px; }
-
-.fieldset{ padding:10px; }
-.fieldset legend{ font-size:.75rem; }
-
-.kpi{ padding:8px 10px; min-width:100px; }
-
-/* Mantener el margen general de pantalla en 20px como pediste */
-.wrap{ padding:20px; }
-/* --- Compactar botón Buscar en la sección Búsqueda rápida --- */
-.stack.center .btn{
-  min-height: 32px;   /* antes 44px */
-  padding: 6px 10px;  /* reduce padding */
-  font-size: .85rem;  /* texto un poco más chico */
+    :root{
+      --bg:#f5f7fb; --card:#ffffff; --ink:#111827; --muted:#6b7280; --primary:#0ea5a4; --primary-700:#0b7d7d;
+      --danger:#ef4444; --ok:#22c55e; --border:#e5e7eb;
+      --shadow:0 10px 20px rgba(2,12,27,.06),0 2px 6px rgba(2,12,27,.05);
+    }
+    *{box-sizing:border-box}
+    html,body{height:100%}
+    body{
+      margin:0; font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+      color:var(--ink); background:var(--bg); overflow-x:hidden;
+      font-size:13px; /* ultra compacto base */
+    }
+    .tiny{font-size:.68rem}
+
+    /* Topbar (compacto) */
+    .topbar{
+      background:linear-gradient(90deg,var(--primary) 0%, #0db7b6 60%, #12d0ce 100%);
+      color:#fff; padding:6px 14px; display:flex; align-items:center; gap:8px;
+      position:sticky; top:0; z-index:10
+    }
+    .topbar .brand{font-weight:700; letter-spacing:.4px; font-size:.9rem}
+    .topbar .pill{background:rgba(255,255,255,.18); border:1px solid rgba(255,255,255,.25); padding:3px 6px; border-radius:999px; font-size:.72rem; display:flex; align-items:center; gap:6px}
+    .topbar .rt{margin-left:auto; display:flex; align-items:center; gap:6px}
+    .timer{background:#0b7d7d; border:1px solid rgba(255,255,255,.25); padding:3px 8px; border-radius:7px; font-variant-numeric:tabular-nums; font-size:.8rem}
+
+    /* Contenedor general (20px todo alrededor) */
+    .wrap{max-width:none; width:100%; margin:0 auto; padding:20px}
+
+    /* Card base (compacto) */
+    .card{background:var(--card); border:1px solid var(--border); border-radius:10px; box-shadow:var(--shadow); overflow:hidden}
+    .card .hd{display:flex; align-items:center; justify-content:space-between; padding:10px; border-bottom:1px solid var(--border)}
+    .card .hd h3{margin:0; font-size:.9rem}         /* TITULOS reducidos */
+    .card .body{padding:10px}
+
+    /* Tipografía secundaria */
+    .muted{color:var(--muted)}
+
+    /* Labels e inputs mini */
+    label{display:block; font-size:.72rem; color:var(--muted); margin:0 0 3px}
+    input,select,textarea{
+      width:100%; padding:6px 8px; border:1px solid var(--border); border-radius:8px; background:#fff; color:var(--ink);
+      outline:none; transition:border-color .15s, box-shadow .15s, background .15s; font-size:.85rem; max-width:100%;
+    }
+    /* PLACEHOLDERS reducidos */
+    input::placeholder, textarea::placeholder{ color:#9aa3af; font-size:.78rem; opacity:.9 }
+    input:focus,select:focus,textarea:focus{border-color:var(--primary); box-shadow:0 0 0 3px rgba(14,165,164,.12); background:#fbfffe}
+    input:not([type="date"]):not([type="time"]):not([type="color"]), select{min-height:30px}
+    input[type="date"],input[type="time"]{min-width:130px}
+    textarea{min-height:60px; resize:vertical}
+
+    /* Girds y auto */
+    .grid-2{display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr); gap:10px}
+    @media (max-width:1000px){.grid-2{grid-template-columns:1fr}}
+    .row{display:grid; grid-template-columns:repeat(12,1fr); gap:6px}
+    .col-12{grid-column:span 12} .col-8{grid-column:span 8} .col-6{grid-column:span 6} .col-4{grid-column:span 4} .col-3{grid-column:span 3}
+    .col-5{grid-column:span 5}
+    @media (max-width:1200px){ .col-3{grid-column:span 6} .col-5{grid-column:span 12} }
+    .row>*, .auto>*{min-width:0}
+    .auto{display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:8px}
+
+    /* Split con separador y sidebar angosta */
+    .split{display:grid; grid-template-columns:minmax(0,1fr) minmax(12px,12px) minmax(0,250px); gap:0; align-items:start}
+    .vsep{width:1px; height:100%; background:var(--border); justify-self:center}
+    @media (max-width:1100px){ .split{grid-template-columns:1fr} .vsep{display:none} }
+
+    /* Fieldset compacto */
+    .fieldset{padding:8px; border:1px solid #eef2f7; border-radius:8px; background:#fafcff}
+    .fieldset legend{font-size:.7rem; color:#7c8a9a; padding:0 4px}
+
+    /* Botones compactos */
+    .btn{border:1px solid var(--border); background:#fff; padding:6px 10px; border-radius:7px; cursor:pointer; font-size:.82rem; min-height:30px}
+    .btn.primary{background:var(--primary); border-color:var(--primary); color:#fff}
+    .btn.danger{background:var(--danger); border-color:var(--danger); color:#fff}
+    .btn.ghost{background:transparent}
+    .btn:active{transform:translateY(1px)}
+    .btn.addon{width:26px; height:26px; min-width:26px; display:inline-flex; align-items:center; justify-content:center; border-radius:7px; padding:0}
+
+    .actions{display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:8px}
+    @media (min-width:900px){ .actions.right{justify-content:flex-end} }
+
+    /* Chips mini */
+    .chip{display:inline-flex; align-items:center; gap:6px; border:1px solid #c8f4e5; background:#ecfdf5; color:#065f46; padding:3px 6px; border-radius:999px; font-size:.68rem}
+    .chip .icon{width:11px; height:11px; display:inline-block}
+    .status-dot{width:6px; height:6px; border-radius:50%}
+    .ok{background:#22c55e} .bad{background:#ef4444}
+
+    /* Botón "VER LEAD" (mantener azul, más pequeño) */
+    .btn.info{border-color:#2563eb; color:#2563eb; background:#fff; padding:6px 10px; font-size:.82rem; min-height:30px}
+    .btn.info:hover{box-shadow:0 0 0 3px rgba(37,99,235,.15)}
+
+    /* Botón WhatsApp menor que Buscar */
+    .btn.wa{border-color:#22c55e; color:#16a34a; background:#fff; display:inline-flex; align-items:center; gap:6px}
+    .input-inline .btn.wa{min-height:26px; padding:0 8px; font-size:.78rem}
+    .btn.wa svg{width:12px; height:12px; display:block}
+    .btn.wa:hover{box-shadow:0 0 0 3px rgba(34,197,94,.15)}
+
+    /* Buscar (centrado, compacto) */
+    .stack{display:flex; flex-direction:column; gap:8px}
+    .stack.center{align-items:center}
+    .stack.center input{max-width:200px; padding:6px 8px; font-size:.85rem}
+    .stack.center .btn{min-height:30px; padding:6px 10px; font-size:.82rem; width:100px}
+
+    /* ===== Reducir tamaño de los VALORES en los campos ===== */
+
+/* Texto que escribe/ve el usuario en inputs, selects y textarea */
+input, select, textarea{
+  font-size: .78rem;   /* antes .85rem */
+  padding: 5px 8px;    /* un pelín más compacto para acompañar */
+  line-height: 1.2;
 }
 
-/* (opcional) compactar también el input del buscador */
-.stack.center input{
-  max-width: 220px;   /* antes 260px */
-  padding: 8px 10px;  /* consistente con modo compacto */
+/* Placeholders aún un poco más chicos para diferenciarse del valor */
+input::placeholder,
+textarea::placeholder{
+  font-size: .74rem;   /* antes .78rem */
+  opacity: .85;
 }
 
-/* WhatsApp más pequeño que Buscar */
+/* Controles de fecha/hora (WebKit/Chromium) */
+input[type="date"]::-webkit-datetime-edit,
+input[type="time"]::-webkit-datetime-edit{
+  font-size: .78rem;
+}
+
+/* Menú desplegable de opciones (soporte varía según navegador) */
+select option{
+  font-size: .78rem;
+}
+
+/* Pastillas de la topbar: reduce números/valores sin “aplastar” */
+.topbar .pill b{
+  font-size: .85em;    /* relativo a la pill, más pequeño pero legible */
+  font-weight: 600;
+}
+
+/* Mantén VER LEAD con su tamaño actual (no lo reduzcas) */
+.btn.info{
+  font-size: .82rem;   /* aseguras que no herede nuevos overrides más chicos */
+}
+
+/* Asegura proporción con el botón WhatsApp (sigue más pequeño que Buscar) */
 .input-inline .btn.wa{
-  min-height: 28px;   /* Buscar quedó en 32px; este es menor */
-  padding: 0 10px;
-  font-size: .80rem;
-  gap: 6px;
+  font-size: .76rem;
+  min-height: 24px;
+  padding: 0 8px;
 }
 .input-inline .btn.wa svg{
-  width: 14px;
-  height: 14px;
+  width: 12px; height: 12px;
 }
+
+/* === Options más pequeños en los dropdowns === */
+select{
+  font-size: .76rem;       /* valor mostrado cuando está cerrado */
+  line-height: 1.2;
+}
+select option{
+  font-size: .72rem;       /* tamaño dentro del menú desplegable */
+  line-height: 1.25;
+  padding: 2px 6px;        /* algo de aire en la lista */
+}
+select optgroup{
+  font-size: .70rem;       /* etiquetas de grupo ligeramente más chicas */
+  font-weight: 600;
+}
+
+/* Afinar en Firefox (mejora consistencia de tamaños) */
+@supports (-moz-appearance: none) {
+  select, select option, select optgroup{
+    font-size: .72rem;
+  }
+}
+
+/* === Utilidades de grid a 3 columnas para formularios === */
+.auto.auto-3{
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)); /* 3 columnas */
+  gap: 8px;                                        /* ya usas 8px en modo compacto */
+}
+
+/* Spans para campos que deban ocupar más ancho */
+.span-2{ grid-column: span 2; }
+.span-3{ grid-column: 1 / -1; }                    /* ocupa todo el ancho (las 3 col) */
+
+/* Responsivo: 2 col en pantallas medianas, 1 col en móviles */
+@media (max-width: 1000px){
+  .auto.auto-3{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .span-3{ grid-column: 1 / -1; }
+}
+@media (max-width: 600px){
+  .auto.auto-3{ grid-template-columns: 1fr; }
+}
+
+
   </style>
 </head>
-
 <body>
   <!-- Topbar -->
   <header class="topbar">
@@ -580,7 +214,7 @@ textarea{ min-height:72px; }      /* antes 80–130px */
     </div>
   </header>
 
-  <!-- CARD GRANDE que contiene todo -->
+  <!-- CARD GRANDE -->
   <main class="wrap">
     <section class="card">
       <div class="hd">
@@ -590,9 +224,7 @@ textarea{ min-height:72px; }      /* antes 80–130px */
 
       <div class="body">
         <div class="grid-2">
-          <!-- IZQUIERDA: Datos del contacto (+ Búsqueda rápida con separador) -->
-          <!-- IZQUIERDA: Datos del contacto (+ Búsqueda rápida con separador) -->
-          <!-- IZQUIERDA: Datos del contacto (+ Búsqueda rápida con separador) -->
+          <!-- IZQUIERDA -->
           <div class="card" style="overflow:hidden">
             <div class="hd">
               <h3>Datos del contacto</h3>
@@ -600,8 +232,7 @@ textarea{ min-height:72px; }      /* antes 80–130px */
             </div>
 
             <div class="body">
-              <!-- aplica versión angosta del split -->
-              <div class="split split--narrow">
+              <div class="split">
                 <!-- Columna principal -->
                 <div>
                   <div class="row">
@@ -612,11 +243,7 @@ textarea{ min-height:72px; }      /* antes 80–130px */
 
                     <div class="col-3">
                       <label>Tipo Documento</label>
-                      <select>
-                        <option>DNI</option>
-                        <option>C.E.</option>
-                        <option>Otro</option>
-                      </select>
+                      <select><option>DNI</option><option>C.E.</option><option>Otro</option></select>
                     </div>
 
                     <div class="col-4">
@@ -624,33 +251,25 @@ textarea{ min-height:72px; }      /* antes 80–130px */
                       <input value="92249116" />
                     </div>
 
-                    <!-- Respira mejor y no se recorta -->
                     <div class="col-5">
                       <label>Producto / Carrera</label>
-                      <input value="PSICOLOGÍA" />
+                      <input value="PSICOLOGÍA" placeholder="Carrera" />
                     </div>
 
                     <div class="col-6">
                       <label>Teléfono</label>
                       <div class="auto">
                         <div class="input-inline" style="flex-wrap:wrap; gap:10px">
-                          <input value="922491164" />
-                          <!-- Botón WhatsApp con ícono -->
-
-
-                          <!-- Chips con iconos -->
+                          <input value="922491164" placeholder="Número principal" />
                           <span class="chip">
-                            <!-- check -->
                             <svg class="icon" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                              <path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z" />
+                              <path d="M9 16.2 4.8 12l-1.4 1.4L9 19 21 7l-1.4-1.4z"/>
                             </svg>
                             Válido
                           </span>
                           <button class="btn wa" title="Abrir WhatsApp">
-                            <!-- ícono WhatsApp (SVG) -->
                             <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                              <path
-                                d="M20.52 3.48A11.94 11.94 0 0 0 12.05 0C5.53 0 .25 5.28.25 11.8c0 2.08.55 4.14 1.6 5.95L0 24l6.41-1.78a11.76 11.76 0 0 0 5.64 1.44h.01c6.52 0 11.8-5.28 11.8-11.8 0-3.15-1.23-6.11-3.34-8.32ZM12.06 21.3h-.01a9.5 9.5 0 0 1-4.85-1.33l-.35-.2-3.8 1.05 1.02-3.7-.23-.38a9.49 9.49 0 0 1-1.44-5.05c0-5.25 4.27-9.52 9.52-9.52 2.54 0 4.93.99 6.72 2.78a9.47 9.47 0 0 1 2.78 6.73c0 5.25-4.27 9.52-9.52 9.52Zm5.52-7.14c-.3-.15-1.78-.88-2.06-.98-.28-.11-.48-.15-.68.15-.2.3-.78.98-.95 1.18-.17.2-.35.22-.65.07-.3-.15-1.24-.46-2.36-1.47-.87-.77-1.46-1.72-1.64-2.01-.17-.3-.02-.46.13-.6.13-.13.3-.35.45-.52.15-.17.2-.3.3-.5.1-.2.05-.38-.02-.53-.07-.15-.68-1.63-.93-2.23-.24-.58-.49-.5-.68-.5l-.58-.01c-.2 0-.52.07-.79.38-.27.3-1.04 1.01-1.04 2.46s1.07 2.85 1.22 3.04c.15.2 2.1 3.2 5.09 4.49.71.31 1.27.49 1.7.63.71.23 1.36.2 1.88.12.57-.08 1.78-.73 2.03-1.44.25-.71.25-1.33.18-1.45-.07-.12-.26-.2-.56-.35Z" />
+                              <path d="M20.52 3.48A11.94 11.94 0 0 0 12.05 0C5.53 0 .25 5.28.25 11.8c0 2.08.55 4.14 1.6 5.95L0 24l6.41-1.78a11.76 11.76 0 0 0 5.64 1.44h.01c6.52 0 11.8-5.28 11.8-11.8 0-3.15-1.23-6.11-3.34-8.32Z"/>
                             </svg>
                             WhatsApp
                           </button>
@@ -667,11 +286,7 @@ textarea{ min-height:72px; }      /* antes 80–130px */
 
                     <div class="col-6">
                       <label>Campus de Estudio</label>
-                      <select>
-                        <option>Lima Centro</option>
-                        <option>Lima Norte</option>
-                        <option>Otro</option>
-                      </select>
+                      <select><option>Lima Centro</option><option>Lima Norte</option><option>Otro</option></select>
                     </div>
 
                     <div class="col-6">
@@ -679,7 +294,6 @@ textarea{ min-height:72px; }      /* antes 80–130px */
                       <input placeholder="Facebook" />
                     </div>
 
-                    <!-- Botón VER LEAD centrado al final de la columna principal -->
                     <div class="col-12">
                       <div class="actions">
                         <button class="btn info">VER LEAD</button>
@@ -688,158 +302,128 @@ textarea{ min-height:72px; }      /* antes 80–130px */
                   </div>
                 </div>
 
-                <!-- Separador vertical -->
+                <!-- Separador -->
                 <div class="vsep" aria-hidden="true"></div>
 
-                <!-- Columna lateral: Búsqueda rápida (más angosta y con input/botón en columna) -->
+                <!-- Búsqueda rápida (sidebar) -->
                 <div>
                   <div class="fieldset">
-                    <legend style="font-weight: bold;">Búsqueda rápida</legend>
-                    <div class="auto" style="margin-top:8px">
+                    <legend><b>Búsqueda rápida</b></legend>
+                    <div class="auto" style="margin-top:6px">
                       <div>
                         <label>Fuente</label>
-                        <select>
-                          <option>INCONCERT</option>
-                          <option>CRM</option>
-                          <option>Web</option>
-                        </select>
+                        <select><option>INCONCERT</option><option>CRM</option><option>Web</option></select>
                       </div>
                       <div>
                         <label>Campo</label>
-                        <select>
-                          <option>Teléfonos</option>
-                          <option>Documento</option>
-                          <option>Email</option>
-                        </select>
+                        <select><option>Teléfonos</option><option>Documento</option><option>Email</option></select>
                       </div>
                       <div>
                         <label>Búsqueda</label>
-                        <!-- apilado vertical -->
-                        <div class="stack center" style="text-align: center;">
+                        <div class="stack center" style="text-align:center;">
                           <input placeholder="Texto de búsqueda" />
                           <button class="btn primary">Buscar</button>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div><!-- /lateral -->
+                </div><!-- /sidebar -->
               </div><!-- /split -->
             </div>
           </div>
 
+          <!-- DERECHA -->
+          <!-- DERECHA -->
+<div class="card" style="overflow:hidden">
+  <div class="hd">
+    <h3>Detalle de llamada</h3>
+    <span class="muted tiny">922491164</span>
+  </div>
 
+  <div class="body">
+    <!-- Campos de llamada: 3 columnas -->
+    <div class="auto auto-3">
+      <div>
+        <label>Tipificación</label>
+        <select id="tipificacion">
+          <option>Contactado</option>
+          <option>No contesta</option>
+          <option>Buzón</option>
+          <option>No interesado</option>
+        </select>
+      </div>
+      <div>
+        <label>Nivel 2</label>
+        <select>
+          <option>—</option>
+          <option>Volver a llamar</option>
+          <option>Cita programada</option>
+          <option>Referido</option>
+        </select>
+      </div>
+      <div>
+        <label>Nivel 3</label>
+        <select>
+          <option>—</option>
+          <option>Interesado</option>
+          <option>No Asistió</option>
+        </select>
+      </div>
+      <div>
+        <label>Fecha de Cita</label>
+        <input type="date" />
+      </div>
+      <div>
+        <label>Hora</label>
+        <input type="time" />
+      </div>
+      <!-- deja la tercera celda vacía para que quede alineado, o añade otro campo -->
+      <div></div>
+    </div>
 
-          <!-- DERECHA: Detalle de llamada (mismo card, con Detalle Lead Efectivo abajo) -->
-          <div class="card" style="overflow:hidden">
-            <div class="hd">
-              <h3>Detalle de llamada</h3>
-              <span class="muted tiny">922491164</span>
-            </div>
-            <div class="body">
-              <!-- Bloque de campos de llamada -->
-              <div class="auto">
+    <!-- Comentarios: que ocupe las 3 columnas -->
+    <div class="span-3" style="margin-top:10px">
+      <label>Comentarios</label>
+      <textarea placeholder="Notas de la gestión (0/400)"></textarea>
+    </div>
 
-                <div>
-                  <label>Tipificación</label>
-                  <select id="tipificacion">
-                    <option>Contactado</option>
-                    <option>No contesta</option>
-                    <option>Buzón</option>
-                    <option>No interesado</option>
-                  </select>
-                </div>
-                <div>
-                  <label>Nivel 2</label>
-                  <select>
-                    <option>—</option>
-                    <option>Volver a llamar</option>
-                    <option>Cita programada</option>
-                    <option>Referido</option>
-                  </select>
-                </div>
-                <div>
-                  <label>Nivel 3</label>
-                  <select>
-                    <option>—</option>
-                    <option>Interesado</option>
-                    <option>No Asistió</option>
-                  </select>
-                </div>
-                <div>
-                  <label>Fecha de Cita</label>
-                  <input type="date" />
-                </div>
-                <div>
-                  <label>Hora</label>
-                  <input type="time" />
-                </div>
-              </div>
+    <!-- Detalle Lead Efectivo: también en 3 columnas -->
+    <div class="fieldset span-3" style="margin-top:10px">
+      <legend><b>Detalle Lead Efectivo</b></legend>
+      <div class="auto auto-3" style="margin-top:6px">
+        <div><label>Nombres</label><input id="per_nombres" placeholder="Nombres" /></div>
+        <div><label>Apellidos</label><input id="per_apellidos" placeholder="Apellidos" /></div>
+        <div><label>DNI</label><input id="per_dni" placeholder="Documento de identidad" /></div>
 
-              <!-- Datos de persona -->
+        <div><label>Fase</label><input value="Interesado" placeholder="Fase" /></div>
+        <div><label>Estado gestión</label><input value="Compromiso Pago" placeholder="Estado" /></div>
+        <div><label>Score</label><input placeholder="0–100" /></div>
 
-              <!-- Datos de gestión -->
-              <!--
-              <div class="fieldset" style="margin-top:12px">
-                <legend>Datos de gestión</legend>
-                <div class="auto">
-                  <div>
-                    <label>Fase</label>
-                    <select id="fase">
-                      <option value="">Selecciona fase…</option>
-                      <option>Lead</option><option>Postulante</option><option>Ingresante</option>
-                    </select>
-                  </div>
-                  <div id="motivo_wrap">
-                    <label>Motivo</label>
-                    <select id="motivo">
-                      <option value="">Selecciona motivo…</option>
-                      <option>Precio</option><option>Horario</option><option>Distancia</option>
-                      <option>Otra institución</option><option>No aplica ahora</option>
-                    </select>
-                  </div>
-                </div>
-              </div>
+        <div><label>Asignado a</label><input value="Agente Demo" placeholder="Asesor" /></div>
+        <div><label>Origen</label><input value="Web / INCONCERT" placeholder="Origen" /></div>
+        <div><label>Fecha creación</label><input type="date" /></div>
 
--->
-              <!-- Comentarios -->
-              <div style="margin-top:12px">
-                <label>Comentarios</label>
-                <textarea placeholder="Notas de la gestión (0/400)"></textarea>
-              </div>
+        <!-- Última gestión ocupa todo el ancho (las 3 columnas) -->
+        <div class="span-3"><label>Última gestión</label><input type="datetime-local" /></div>
+      </div>
+    </div>
 
-              <!-- ===== Detalle Lead Efectivo (DEBAJO, MISMO CARD) ===== -->
-              <div class="fieldset" style="margin-top:12px">
-                <legend style="font-weight: bold;">Detalle Lead Efectivo</legend>
-                <br>
-                <div class="auto">
-                  <div><label>Nombres</label><input id="per_nombres" placeholder="Nombres" /></div>
-                  <div><label>Apellidos</label><input id="per_apellidos" placeholder="Apellidos" /></div>
-                  <div><label>DNI</label><input id="per_dni" placeholder="Documento de identidad" /></div>
-                  <div><label>Fase</label><input value="Interesado" /></div>
-                  <div><label>Estado gestión</label><input value="Compromiso Pago" /></div>
-                  <div><label>Score</label><input placeholder="0–100" /></div>
-                  <div><label>Asignado a</label><input value="Agente Demo" /></div>
-                  <div><label>Origen</label><input value="Web / INCONCERT" /></div>
-                  <div><label>Fecha creación</label><input type="date" /></div>
-                  <div><label>Última gestión</label><input type="datetime-local" /></div>
-                </div>
-              </div>
+    <!-- Acciones -->
+    <div class="actions span-3" style="margin-top:12px">
+      <button class="btn">Silenciar</button>
+      <button class="btn danger">Colgar</button>
+      <button class="btn primary">Guardar gestión</button>
+    </div>
+  </div>
+</div>
 
-              <!-- Acciones del card derecho -->
-              <div class="actions" style="margin-top:14px">
-                <button class="btn">Silenciar</button>
-                <button class="btn danger">Colgar</button>
-                <button class="btn primary">Guardar gestión</button>
-              </div>
-            </div>
-          </div>
         </div><!-- /grid-2 -->
 
-        <!-- BOTONES INFERIORES DEL CARD GRANDE -->
-        <div class="actions" style="margin-top:18px">
-          <button class="btn">Ver Lead</button>
-          <button class="btn primary">Actualizar Lead</button>
-        </div>
+        <!-- Botones inferiores del card grande -->
+        <div class="actions" style="margin-top:14px">
+  <button class="btn info">Ver Lead</button>
+  <button class="btn primary">Actualizar Lead</button>
+</div>
       </div>
     </section>
   </main>
@@ -847,17 +431,23 @@ textarea{ min-height:72px; }      /* antes 80–130px */
   <script>
     // Cronómetro simple
     const timerEl = document.getElementById('timer');
-    let sec = 0; setInterval(() => { sec++; const h = String(Math.floor(sec / 3600)).padStart(2, '0'); const m = String(Math.floor(sec % 3600 / 60)).padStart(2, '0'); const s = String(sec % 60).padStart(2, '0'); timerEl.textContent = `${h}:${m}:${s}` }, 1000)
+    let sec=0;
+    setInterval(()=>{
+      sec++;
+      const h=String(Math.floor(sec/3600)).padStart(2,'0');
+      const m=String(Math.floor(sec%3600/60)).padStart(2,'0');
+      const s=String(sec%60).padStart(2,'0');
+      if(timerEl) timerEl.textContent=`${h}:${m}:${s}`
+    },1000);
 
     // Mostrar "Motivo" solo cuando Tipificación = "No interesado"
     const tipificacion = document.getElementById('tipificacion');
-    const motivoWrap = document.getElementById('motivo_wrap');
-    function toggleMotivo() {
+    const motivoWrap   = document.getElementById('motivo_wrap'); // si existe
+    function toggleMotivo(){
       const show = tipificacion?.value?.toLowerCase() === 'no interesado';
-      if (motivoWrap) motivoWrap.style.display = show ? '' : 'none';
+      if(motivoWrap) motivoWrap.style.display = show ? '' : 'none';
     }
-    if (tipificacion) { toggleMotivo(); tipificacion.addEventListener('change', toggleMotivo) }
+    if (tipificacion){ toggleMotivo(); tipificacion.addEventListener('change', toggleMotivo) }
   </script>
 </body>
-
 </html>
